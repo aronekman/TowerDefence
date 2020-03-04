@@ -1,11 +1,19 @@
-package Game
-import o1._
+package towerDefence
+
+import towerDefence._
 
 abstract class Tower {
   var DMG: Int
   var cost: Int
   var range: Int
+  var target: Option[Enemy] = None
   
+  def doDamage = {
+    target match {
+      case Some(enemy) => enemy.takeDamage(DMG)
+      case None =>
+    }
+  }
 }
 
 class Welho extends Tower {
