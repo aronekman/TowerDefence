@@ -1,0 +1,13 @@
+Olen lisännyt perusluokat kuten enemy, tower ja game olen myös tehnyt gameReaderin 
+joka pystyy lukemaan kartan teksti tiedostosta. Seuraavaksi aijon kehittää helpon gui:n 
+jotta pystyn sen avulla testamaan että toimiiko uut luokat silloin kun teen niitä.
+
+En ole vielä pystynyt kokeilemaan mitään metodejani. Kun saan GUI:n toimimaan 
+rupean kokeilemaan metodeja.
+
+Scala swingin käyttö on osoittautunut vaikeammaksi kun mitä aluksi odotin.
+
+20 tuntia
+
+Lähdin alkuun aika eri tavalla kun mitä olin suunnitellut, mutta töymäärä on ollut
+aika sama kun suunnitelmassa
