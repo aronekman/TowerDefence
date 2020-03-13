@@ -2,6 +2,10 @@ package towerDefence
 
 import constants._
 import towerDefence.GUI.towerDefenceWorld
+import towerDefence._
+import java.awt.image._
+import javax.imageio._
+import java.io._
 
 abstract class Enemy {
   var maxHP: Int
@@ -14,7 +18,7 @@ abstract class Enemy {
   var travelDistance: Int = 0
   var speed = enemySpeed
   var wayPoint: Int = 0
-  def nextWayPoint: (Int, Int) = towerDefenceWorld.wayPoints(wayPoint)
+  def nextWayPoint: (Int, Int) = towerDefenceWorld.path(wayPoint)
   var direction: String = {
     if (startPos._1 < 50) {
       "right"
@@ -26,6 +30,19 @@ abstract class Enemy {
       "up"
     }
   }
+  val rightImage: BufferedImage
+  val leftImage: BufferedImage
+  val downImage: BufferedImage
+  val upImage: BufferedImage
+  
+  var image: BufferedImage = {
+    direction match {
+      case "right" => rightImage
+      case "left"  => leftImage
+      case "down"  => downImage
+      case "up"    => upImage
+    }
+  }
   
   def isAlive: Boolean = HP > 0
   
@@ -33,26 +50,30 @@ abstract class Enemy {
     this.HP -= DMG
   }
     
-  def changePosition = {
+  def changeDirection = {
     wayPoint += 1
-    if (nextWayPoint._1 > posX && distanceBetweenPoints(nextWayPoint, pos) < speed) {
+    if (nextWayPoint._1 > posX) {
       direction = "right"
       posX += speed
-    } else if (nextWayPoint._1 < posX && distanceBetweenPoints(nextWayPoint, pos) < speed) {
+      image = rightImage
+    } else if (nextWayPoint._1 < posX && distanceBetweenPoints(towerDefenceWorld.path(wayPoint - 1), pos) < speed) {
       direction = "left"
       posX -= speed
-    } else if (nextWayPoint._2 > posY && distanceBetweenPoints(nextWayPoint, pos) < speed) {
+      image = leftImage
+    } else if (nextWayPoint._2 > posY && distanceBetweenPoints(towerDefenceWorld.path(wayPoint - 1), pos) < speed) {
       direction = "down"
       posY += speed
+      image = downImage
     } else {
       direction = "up"
       posY -= speed
+      image = upImage
     }   
   }
   
   def move = {
     if (distanceBetweenPoints(nextWayPoint, pos) < speed) {
-      this.changePosition
+      this.changeDirection
     } else {
         direction match {
           case "right" => posX += speed
@@ -67,5 +88,8 @@ abstract class Enemy {
 class basicEnemy extends Enemy {
   var maxHP: Int = 100
   var reward: Int = 5
-  
+  val rightImage = ImageIO.read(new File("./Pics/basicEnemyRight.png"))
+  val leftImage  = ImageIO.read(new File("./Pics/basicEnemyLeft.png"))
+  val downImage  = ImageIO.read(new File("./Pics/basicEnemyDown.png"))
+  val upImage    = ImageIO.read(new File("./Pics/basicEnemyUp.png"))
 }

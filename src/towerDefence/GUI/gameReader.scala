@@ -31,23 +31,11 @@ object gameReader {
             case '+' => towerDefenceWorld.addGrass(this.positionCalculator(x, y))
             case '-' => towerDefenceWorld.addRoad(this.positionCalculator(x, y))
             case 's' => towerDefenceWorld.addSpawnPoint(this.positionCalculator(x, y))
-            case 'b' => {
-              towerDefenceWorld.addBase(this.positionCalculator(x, y))
-              towerDefenceWorld.addWayPoint(this.positionCalculator(x, y))
-            }
-            case '*' => {
-              wayPoints = wayPoints :+ this.positionCalculator(x, y)
-              towerDefenceWorld.addRoad(this.positionCalculator(x, y))
-            }
+            case 'b' => towerDefenceWorld.addBase(this.positionCalculator(x, y))
             case _ =>
           }
           x += 1
         }
-        if (wayPoints.size == 1) {
-            towerDefenceWorld.addWayPoint(wayPoints(0))
-          } else if (wayPoints.size == 2) {
-            wayPoints.reverse.map(towerDefenceWorld.addWayPoint(_))
-          }
         x = 0
       }
       
@@ -58,5 +46,5 @@ object gameReader {
     }
   }
   
-  def positionCalculator(x: Int, y: Int): (Int, Int) = (x*squareWidth-25, y*squareHeight-25)
+  def positionCalculator(x: Int, y: Int): (Int, Int) = ((x*squareWidth)-squareWidth, (y*squareHeight)-squareHeight)
 }
