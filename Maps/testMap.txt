@@ -1,20 +1,32 @@
 #Map
 ......................
-.++++++++++++++++++++.
-s------------------++.
-.+++++++++++++++++-++.
-.++++----+++-------++.
-.++++-++-+++-++++++++.
-.++++-++-+++-++++++++.
-.++++-++-----++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.++++-+++++++++++++++.
-.....b...............
+.gggggggggggggggggggg.
+s------------------gg.
+.ggggg+gggg+gggg++-gg.
+.gggg----ggg-------gg.
+.gggg-gg-ggg-gggggggg.
+.gggg-gg-g+g-gggggggg.
+.gggg-+g-----gggggggg.
+.gggg-ggggggggggggggg.
+.ggg+-ggggggggggggggg.
+.gggg-ggggggggggggggg.
+.gggg-+gggggggggggggg.
+.gggg-ggggggggggggggg.
+.ggg+-ggggggggggggggg.
+.gggg-ggggggggggggggg.
+.gggg-ggggggggggggggg.
+.....b................
 
-// "+" = ground, - = enemyRoute, . = border, b = playerBase * = wayPoint/corner
+#Waves
+#1 
+BasicEnemy 100
+#2 
+BasicEnemy 5
+#3 
+BasicEnemy 6
+#4 
+BasicEnemy 2
+#End
+
+
+// "g" = ground, "-" = enemyPath, "." = border, "b" = playerBase "+" = towerSquare

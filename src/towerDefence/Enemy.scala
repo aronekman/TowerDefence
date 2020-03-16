@@ -1,24 +1,23 @@
 package towerDefence
 
 import constants._
-import towerDefence.GUI.towerDefenceWorld
 import towerDefence._
-import java.awt.image._
-import javax.imageio._
-import java.io._
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import java.io.File
 
-abstract class Enemy {
+abstract class Enemy(game: Game) {
   var maxHP: Int
   var HP: Int = maxHP
   var reward: Int
-  var startPos: (Int, Int) = (towerDefenceWorld.spawnPoint._1, towerDefenceWorld.spawnPoint._2)
+  var startPos: (Int, Int) = (game.spawnPoint._1, game.spawnPoint._2)
   var posX: Int = startPos._1
   var posY: Int = startPos._2
   def pos: (Int, Int) = (posX, posY)
   var travelDistance: Int = 0
   var speed = enemySpeed
   var wayPoint: Int = 0
-  def nextWayPoint: (Int, Int) = towerDefenceWorld.path(wayPoint)
+  def nextWayPoint: (Int, Int) = game.path(wayPoint)
   var direction: String = {
     if (startPos._1 < 50) {
       "right"
@@ -44,6 +43,11 @@ abstract class Enemy {
     }
   }
   
+  def setHp = {
+    this.HP = maxHP
+    this
+  }
+  
   def isAlive: Boolean = HP > 0
   
   def takeDamage(DMG: Int) = {
@@ -56,11 +60,11 @@ abstract class Enemy {
       direction = "right"
       posX += speed
       image = rightImage
-    } else if (nextWayPoint._1 < posX && distanceBetweenPoints(towerDefenceWorld.path(wayPoint - 1), pos) < speed) {
+    } else if (nextWayPoint._1 < posX && distanceBetweenPoints(game.path(wayPoint - 1), pos) < speed) {
       direction = "left"
       posX -= speed
       image = leftImage
-    } else if (nextWayPoint._2 > posY && distanceBetweenPoints(towerDefenceWorld.path(wayPoint - 1), pos) < speed) {
+    } else if (nextWayPoint._2 > posY && distanceBetweenPoints(game.path(wayPoint - 1), pos) < speed) {
       direction = "down"
       posY += speed
       image = downImage
@@ -85,7 +89,7 @@ abstract class Enemy {
   }
 }
 
-class basicEnemy extends Enemy {
+class BasicEnemy(game: Game) extends Enemy(game) {
   var maxHP: Int = 100
   var reward: Int = 5
   val rightImage = ImageIO.read(new File("./Pics/basicEnemyRight.png"))
