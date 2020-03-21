@@ -12,14 +12,21 @@ object constants {
   var squaresInColumn = 15
   var squareWidth = viewWidth/squaresInRow
   var squareHeight = viewHeight/squaresInColumn
-  var enemySpeed = 1
-  var gameSpeed = 1
-  var enemyDelay = 20
+  var enemySpeed = 25
+  var enemyDelay = 50
   var ticksPerSecond = 200
   var startHP = 20
+  var startMoney = 150
+  var basicTowerCost = 50
   
   
   def distanceBetweenPoints(a: (Int, Int), b: (Int, Int)) = {
     Math.sqrt((a._2 - b._2) * (a._2 - b._2) + (a._1 - b._1) * (a._1 - b._1))
+  }
+  def xDistance(from: (Int, Int), to: (Int, Int)): Int = {
+    to._1 - from._1
+  }
+  def yDistance(from: (Int, Int), to: (Int, Int)): Int = {
+    to._2 - from._2
   }
 }

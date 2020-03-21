@@ -46,7 +46,7 @@ object gameReader {
       while ({currentLine = lineReader.readLine().trim().toLowerCase(); !currentLine.startsWith("#end")}) {
         if (currentLine.startsWith("#")) {
           if (!wave.isEmpty) {
-            game.addEnemy(wave.map(_.setHp))
+            game.addEnemy(wave)
             wave = Seq()
           }
         } else {
@@ -59,7 +59,7 @@ object gameReader {
         }
       }
       if (!wave.isEmpty) {
-        game.addEnemy(wave.map(_.setHp))
+        game.addEnemy(wave)
       }
       
     } catch {

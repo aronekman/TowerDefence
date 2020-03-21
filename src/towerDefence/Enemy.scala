@@ -8,7 +8,7 @@ import java.io.File
 
 abstract class Enemy(game: Game) {
   var maxHP: Int
-  var HP: Int = maxHP
+  var HP: Int
   var reward: Int
   var startPos: (Int, Int) = (game.spawnPoint._1, game.spawnPoint._2)
   var posX: Int = startPos._1
@@ -42,11 +42,7 @@ abstract class Enemy(game: Game) {
       case "up"    => upImage
     }
   }
-  
-  def setHp = {
-    this.HP = maxHP
-    this
-  }
+
   
   def isAlive: Boolean = HP > 0
   
@@ -90,7 +86,8 @@ abstract class Enemy(game: Game) {
 }
 
 class BasicEnemy(game: Game) extends Enemy(game) {
-  var maxHP: Int = 100
+  var maxHP: Int = 50
+  var HP: Int = maxHP
   var reward: Int = 5
   val rightImage = ImageIO.read(new File("./Pics/basicEnemyRight.png"))
   val leftImage  = ImageIO.read(new File("./Pics/basicEnemyLeft.png"))

@@ -19,12 +19,13 @@ object towerDefenceApp extends SimpleSwingApplication {
   val game = new Game
   game.loader(testMap, game)
   game.roadCalculator
-  var buttonSize = new Dimension(constants.squareWidth *2, constants.squareHeight * 2)
+  var guiWidth = 120
+  var guiHeight = 80
 
   def top = new MainFrame {
     this.title = "Tower Defence"
     this.resizable = false
-    this.preferredSize = new Dimension(constants.viewWidth + 87,constants.viewHeight + constants.squareHeight * 2)
+    this.preferredSize = new Dimension(constants.viewWidth + guiWidth,constants.viewHeight + guiHeight) 
   //  this.minimumSize = new Dimension(constants.viewWidth + 89,constants.viewHeight + constants.squareHeight * 2)
   //  this.maximumSize = new Dimension(constants.viewWidth + 89,constants.viewHeight + constants.squareHeight * 2)
     var clickedSquare: Option[(Int,Int)] = None
@@ -33,6 +34,24 @@ object towerDefenceApp extends SimpleSwingApplication {
       g.drawImage(pic, pos._1, pos._2, null)
     }
     
+    def drawHP(g: Graphics2D, pos: (Int, Int), hp: Int) = {
+      g.drawString(hp.toString(), pos._1+ constants.squareWidth/4, pos._2 + constants.squareHeight/4)
+    }
+    
+    val hp = new Label("HP: " + game.HP.toString()) {
+      this.font = new Font("Calibri", 0, 36)
+      this.foreground = Color.red
+    }
+    
+    val money = new Label("Money: " + game.money.toString()) {
+      this.font = new Font("Calibri", 0, 36)
+      this.foreground = Color.green
+    }
+    
+    val startButton = new Button("start")
+    val basicTowerButton = new Button("buy\nBasicTower")
+    basicTowerButton.visible = false
+      
     val map = new BorderPanel {
       override def paintComponent(g: Graphics2D) {
         game.grass.map(x => draw(g, x._2, grassImage))
@@ -40,22 +59,30 @@ object towerDefenceApp extends SimpleSwingApplication {
         game.towerSquare.map(x => draw(g, x._2, towerSquareImage))
         game.towers.map(x => draw(g, x.pos, x.image))
         game.spawnedEnemies.map(x => draw(g, x.pos, x.image))
+        game.spawnedEnemies.map(x => drawHP(g, x.pos, x.HP))
       }
       
-      border = Swing.MatteBorder(0, 0, 0, 0, Color.white)
-      val startButton = new Button("start")
-      startButton.minimumSize = buttonSize
-      val basicTowerButton = new Button("buy\nBasicTower")
-      basicTowerButton.visible = false
-      basicTowerButton.preferredSize = buttonSize
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
       
-      val buttons = new BoxPanel(Orientation.Vertical) {
-        border = Swing.MatteBorder(0, 0, 0, 0, Color.white)
-        contents += startButton 
+      val eastPanel = new BoxPanel(Orientation.Vertical) {
+        preferredSize = new Dimension(guiWidth, constants.viewHeight)
+        background = Color.white
+        border = Swing.MatteBorder(0, 8, 0, 0, Color.darkGray)
+        contents += startButton
+        contents += Swing.HGlue
         contents += basicTowerButton
       }
       
-      add(buttons, BorderPanel.Position.East)
+      val southPanel = new BoxPanel(Orientation.Horizontal) {
+        preferredSize = new Dimension(constants.viewWidth + guiWidth, guiHeight)
+        border = Swing.MatteBorder(8, 0, 0, 0, Color.darkGray)
+        contents += hp
+        contents += Swing.HGlue
+        contents += money
+      }
+      
+      add(southPanel, BorderPanel.Position.South)
+      add(eastPanel, BorderPanel.Position.East)
       
       listenTo(mouse.clicks)
         reactions += {
@@ -71,8 +98,10 @@ object towerDefenceApp extends SimpleSwingApplication {
         }
   
       listenTo(startButton) 
+      listenTo(basicTowerButton)
       reactions += {
-        case ButtonClicked(b) => if (b == startButton) {
+        case ButtonClicked(b) => {
+          if (b == startButton) {
             if (game.running) {
               b.text = "start"
               game.running = false
@@ -80,22 +109,30 @@ object towerDefenceApp extends SimpleSwingApplication {
               b.text = "pause"
               game.running = true
             }
-             startButton.revalidate()
-             startButton.repaint()
+            startButton.revalidate()
+            startButton.repaint()
+          } 
+          
+          if (b == basicTowerButton) {
+            if (constants.basicTowerCost <= game.money) {
+              game.addTower("basicTower", clickedSquare.get)
+              clickedSquare = None
+              basicTowerButton.visible = false
+              setMoney()
+              money.repaint()
+            }
           }
-      }
-      
-      listenTo(basicTowerButton)
-      reactions += {
-        case ButtonClicked(b) => if (b == basicTowerButton) {
-          game.addTower("basicTower", clickedSquare.get)
-          clickedSquare = None
-          basicTowerButton.visible = false
         }
       }
+      
+    }    
+    
+    private def setHP() = {
+        hp.text = "HP: %d".format(game.HP)
+      }
+    private def setMoney() = {
+      money.text = "Money: %d".format(game.money)
     }
-    
-    
      
     contents = map 
     
@@ -104,8 +141,11 @@ object towerDefenceApp extends SimpleSwingApplication {
         if (game.running) {
           map.repaint()
           game.timePasses()
+          setHP()
+          setMoney()
         } else {
           map.repaint()
+          startButton.text = "start"
         }
       }
     }

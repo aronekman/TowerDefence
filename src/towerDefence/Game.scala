@@ -14,6 +14,7 @@ class Game {
   var counter = 0
   var wave = 0
   var HP = constants.startHP
+  var money: Int = constants.startMoney
   var base: (Int, Int) = _
   var grass: Seq[(Rectangle,(Int, Int))] = Seq()
   var road: Seq[(Rectangle,(Int, Int))] = Seq()
@@ -27,7 +28,7 @@ class Game {
   
   var running: Boolean = false
   
-  def isLost: Boolean = false
+  def isLost: Boolean = HP <= 0
   def isWon: Boolean = false
   
   def spawnEnemies = {
@@ -64,6 +65,7 @@ class Game {
     tower match {
       case "basicTower" => {
         towers = towers :+ new basicTower(pos, this)
+        money -= towers.last.cost
       }
       case _ =>
     }
@@ -79,22 +81,28 @@ class Game {
     base = position
   }
   
+  def getMoney(enemy: Enemy) = {
+    if (!enemy.isAlive) {
+      money += enemy.reward
+    }
+  }
+  
   def timePasses() = {
     spawnedEnemies.map(_.move)
     spawnedEnemies.map(_.travelDistance += 1)
     spawnedEnemies.sortBy(_.travelDistance)
     towers.map(_.findTarget)
     towers.map(_.doDamage)
+    spawnedEnemies.map(getMoney(_))
     spawnedEnemies = spawnedEnemies.filter(_.isAlive)
     if (!waveEnemies.isEmpty) {
       spawnEnemies
     }
     if (!spawnedEnemies.isEmpty && constants.distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= constants.enemySpeed) {
       spawnedEnemies = spawnedEnemies.drop(1)
+      HP -= 1
     }
-    if (spawnedEnemies.isEmpty && waveEnemies.isEmpty) {
-      running = false
-    }
+    if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) | isLost) running = false
   }
   
   def roadCalculator = {
