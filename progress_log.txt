@@ -1,0 +1,32 @@
+Väliraportti 1:
+
+Olen lisännyt perusluokat kuten enemy, tower ja game olen myös tehnyt gameReaderin 
+joka pystyy lukemaan kartan teksti tiedostosta. Seuraavaksi aijon kehittää helpon gui:n 
+jotta pystyn sen avulla testamaan että toimiiko uudet luokat silloin kun teen niitä.
+
+En ole vielä pystynyt kokeilemaan mitään metodejani. Kun saan GUI:n toimimaan 
+rupean kokeilemaan metodeja.
+
+Scala swingin käyttö on osoittautunut vaikeammaksi kun mitä aluksi odotin.
+
+20 tuntia
+
+Lähdin alkuun aika eri tavalla kun mitä olin suunnitellut, mutta töymäärä on ollut
+aika sama kun suunnitelmassa
+
+Väliraportti 2:
+
+Toimiva simppeli Gui on lisätty.
+Gui:ssä näkyy vihollisten HP, oma HP ja omat rahat.
+Gui:ssä voi myös ostaa omia torneja sekä pysäyttää pelin.
+
+GUI:n avulla olen pystynyt kokeilemaan tornien ja vihollisten toimivuutta,
+pieniä vikoja on löytynyt mutta tässä vaiheessa en vielä ruve niitä korjaamaan,
+koska peli toimii niinku pitäisikin normaaleissa tapauksissa.
+
+mitään hankalia virheitä ei ole esiintynyt
+
+25 tuntia
+
+Olen vähän, projektisuunnitelmassa arvioitua tilsannetta, edessä. 
+Jos jatkan tähän tahtiin uskon että minulle jää paljon aikaa pelin viimestelyyn
