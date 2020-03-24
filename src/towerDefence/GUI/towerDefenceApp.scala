@@ -43,10 +43,16 @@ object towerDefenceApp extends SimpleSwingApplication {
       this.foreground = Color.red
     }
     
+    val wave = new Label("Wave: " + (game.wave + 1).toString()) {
+      this.font = new Font("Calibri", 0, 36)
+      this.foreground = Color.black
+    }
+    
     val money = new Label("Money: " + game.money.toString()) {
       this.font = new Font("Calibri", 0, 36)
-      this.foreground = Color.green
+      this.foreground = Color.black
     }
+    
     
     val startButton = new Button("start")
     val basicTowerButton = new Button("buy\nBasicTower")
@@ -78,6 +84,8 @@ object towerDefenceApp extends SimpleSwingApplication {
         border = Swing.MatteBorder(8, 0, 0, 0, Color.darkGray)
         contents += hp
         contents += Swing.HGlue
+        contents += wave
+        contents += Swing.HGlue
         contents += money
       }
       
@@ -108,6 +116,7 @@ object towerDefenceApp extends SimpleSwingApplication {
             } else {
               b.text = "pause"
               game.running = true
+              wave.text = "Wave: %d".format(game.wave + 1)
             }
             startButton.revalidate()
             startButton.repaint()
@@ -132,6 +141,9 @@ object towerDefenceApp extends SimpleSwingApplication {
       }
     private def setMoney() = {
       money.text = "Money: %d".format(game.money)
+    }
+    private def setWave() = {
+      wave.text = "Wave: %d".format(game.wave)
     }
      
     contents = map 

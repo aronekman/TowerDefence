@@ -12,7 +12,7 @@ object constants {
   var squaresInColumn = 15
   var squareWidth = viewWidth/squaresInRow
   var squareHeight = viewHeight/squaresInColumn
-  var enemySpeed = 25
+  var enemySpeed = 1
   var enemyDelay = 50
   var ticksPerSecond = 200
   var startHP = 20

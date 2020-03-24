@@ -102,7 +102,11 @@ class Game {
       spawnedEnemies = spawnedEnemies.drop(1)
       HP -= 1
     }
-    if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) | isLost) running = false
+    if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) | isLost) {
+      running = false
+      wave += 1
+      waveEnemies = allEnemies(wave)
+    }
   }
   
   def roadCalculator = {
