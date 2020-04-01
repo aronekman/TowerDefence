@@ -9,9 +9,9 @@ s------------------gg.
 .gggg-+g-----gggggggg.
 .gggg-ggggggggggggggg.
 .ggg+-ggggggggggggggg.
-.gggg---ggggggggggggg.
-.ggggg+-ggggggggggggg.
-.gggg---ggggggggggggg.
+.gggg------gggggggggg.
+.ggggg+ggg-gggggggggg.
+.gggg------gggggggggg.
 .ggg+-ggggggggggggggg.
 .gggg-ggggggggggggggg.
 .gggg-ggggggggggggggg.
@@ -19,15 +19,10 @@ s------------------gg.
 
 #Waves
 #1 
-BasicEnemy 5
-#2 
-BasicEnemy 7
-#3 
-BasicEnemy 10
-#4 
 BasicEnemy 20
-#5
-BasicEnemy 50
+#2 
+BasicEnemy 30
+
 #End
 
 

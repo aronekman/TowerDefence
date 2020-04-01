@@ -49,12 +49,13 @@ object gameReader {
             game.addEnemy(wave)
             wave = Seq()
           }
-        } else {
+        } else if (currentLine != "") {
           times = currentLine.filter(_.isDigit).toInt
           currentLine.filter(_.isLetter).trim() match {
             case "basicenemy" => {
               wave = wave ++ Seq.fill(times)(new BasicEnemy(game))
             }
+            case _ =>
           }
         }
       }

@@ -8,6 +8,8 @@ object constants {
   
   var viewWidth = 1000
   var viewHeight = 750
+  var guiWidth = 120
+  var guiHeight = 80
   var squaresInRow = 20
   var squaresInColumn = 15
   var squareWidth = viewWidth/squaresInRow
@@ -17,6 +19,8 @@ object constants {
   var ticksPerSecond = 200
   var startHP = 20
   var startMoney = 150
+  
+  
   var basicTowerCost = 50
   
   

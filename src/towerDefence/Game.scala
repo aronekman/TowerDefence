@@ -29,15 +29,19 @@ class Game {
   var running: Boolean = false
   
   def isLost: Boolean = HP <= 0
-  def isWon: Boolean = false
+  def isWon: Boolean = {
+    (wave == allEnemies.length - 1) && waveEnemies.isEmpty && spawnedEnemies.isEmpty && !isLost
+  }
   
   def spawnEnemies = {
-    if (counter%enemyDelay == 0) {
-      spawnedEnemies = spawnedEnemies :+ waveEnemies(0)
-      waveEnemies = waveEnemies.tail
-      counter += 1
-    } else {
-      counter += 1
+    if (!waveEnemies.isEmpty && !isLost) {
+      if (counter%enemyDelay == 0) {
+        spawnedEnemies = spawnedEnemies :+ waveEnemies(0)
+        waveEnemies = waveEnemies.tail
+        counter += 1
+      } else {
+        counter += 1
+      }
     }
   }
   
@@ -87,6 +91,25 @@ class Game {
     }
   }
   
+  def loseHP = {
+    if (!spawnedEnemies.isEmpty && constants.distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= constants.enemySpeed) {
+      spawnedEnemies = spawnedEnemies.drop(1)
+      HP -= 1
+    }
+  }
+  
+  def waveChanger = {
+    if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) && !this.isWon && !this.isLost) {
+      running = false
+      wave += 1
+      waveEnemies = allEnemies(wave)
+    } else if (this.isWon) {
+      running = false
+    } else if (this.isLost) {
+      running = false
+    }
+  }
+  
   def timePasses() = {
     spawnedEnemies.map(_.move)
     spawnedEnemies.map(_.travelDistance += 1)
@@ -95,18 +118,9 @@ class Game {
     towers.map(_.doDamage)
     spawnedEnemies.map(getMoney(_))
     spawnedEnemies = spawnedEnemies.filter(_.isAlive)
-    if (!waveEnemies.isEmpty) {
-      spawnEnemies
-    }
-    if (!spawnedEnemies.isEmpty && constants.distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= constants.enemySpeed) {
-      spawnedEnemies = spawnedEnemies.drop(1)
-      HP -= 1
-    }
-    if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) | isLost) {
-      running = false
-      wave += 1
-      waveEnemies = allEnemies(wave)
-    }
+    this.loseHP
+    this.spawnEnemies
+    this.waveChanger
   }
   
   def roadCalculator = {
