@@ -5,19 +5,18 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.File
 import scala.math._
+import java.awt.geom.AffineTransform
 
 abstract class Tower(val pos: (Int, Int), game: Game) {
-  var DMG: Int
-  var cost: Int
-  var range: Int
+  val DMG: Int
+  val cost: Int
+  val range: Int
   var target: Option[Enemy] = None
-  var fireRate: Int
-  val rightImage: BufferedImage
-  val upImage: BufferedImage
-  val leftImage: BufferedImage
-  val downImage: BufferedImage
+  val fireRate: Int
+  val towerImage: BufferedImage
   var image: BufferedImage
-  
+
+
   
   var counter = fireRate
   def doDamage = {
@@ -45,33 +44,40 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
   }
   
   def changeImage(enemyPos: (Int, Int)) = {
-    if (abs(constants.yDistance(pos, enemyPos)) > abs(constants.xDistance(pos, enemyPos))) {
-      if (constants.yDistance(pos, enemyPos) < 0) {
-        image = upImage
-      } else {
-        image = downImage
-      }  
-    } else {
-      if (constants.xDistance(pos, enemyPos) < 0) {
-        image = leftImage
-      } else {
-        image = rightImage
-      }
-    }
+     def angleCalcaluator: Double = {
+       if (enemyPos._1 >= pos._1 && enemyPos._2 < pos._2) {
+         Math.atan((enemyPos._1 - pos._1).toDouble/(pos._2 - enemyPos._2)).toDegrees
+       } else if (enemyPos._1 > pos._1 && enemyPos._2 >= pos._2) {
+          90.0 + Math.atan((enemyPos._2 - pos._2).toDouble/(enemyPos._1 - pos._1)).toDegrees
+       } else if (enemyPos._1 <= pos._1 && enemyPos._2 > pos._2) {
+         180.0 +  Math.atan((pos._1 - enemyPos._1).toDouble/(enemyPos._2 - pos._2)).toDegrees
+       } else {
+         270.0 + Math.atan((pos._2 - enemyPos._2).toDouble/(pos._1 - enemyPos._1)).toDegrees
+       }
+     }
+     
+     var w = towerImage.getWidth
+     var h = towerImage.getHeight
+     
+     var rotated = new BufferedImage(w, h, towerImage.getType)
+     var g = rotated.createGraphics()
+     g.rotate(Math.toRadians(angleCalcaluator), w/2, h/2)
+     g.drawImage(towerImage, null, 0, 0)
+     g.dispose()
+     image = rotated
   }
+ 
   
 }
 
 class basicTower(pos: (Int, Int), game: Game) extends Tower(pos, game) {
-  var DMG = 20
-  var cost = constants.basicTowerCost
-  var range = 200
-  var fireRate = 50
-  val rightImage = ImageIO.read(new File("./Pics/basicTowerRight.png"))
-  val leftImage = ImageIO.read(new File("./Pics/basicTowerLeft.png"))
-  val upImage = ImageIO.read(new File("./Pics/basicTowerUp.png"))
-  val downImage = ImageIO.read(new File("./Pics/basicTowerDown.png"))
-  var image = upImage
+  val DMG = 20
+  val cost = constants.basicTowerCost
+  val range = 200
+  val fireRate = 50
+  val towerImage = ImageIO.read(new File("./Pics/basicTower.png"))
+  var image = towerImage
+  
 }
 
 /*class archer(pos: (Int, Int)) extends Tower(pos) {

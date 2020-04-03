@@ -85,7 +85,7 @@ abstract class Enemy(game: Game) {
 }
 
 class BasicEnemy(game: Game) extends Enemy(game) {
-  var HP: Int = 50
+  var HP: Int = 100
   var reward: Int = 3
   val rightImage = ImageIO.read(new File("./Pics/basicEnemyRight.png"))
   val leftImage  = ImageIO.read(new File("./Pics/basicEnemyLeft.png"))

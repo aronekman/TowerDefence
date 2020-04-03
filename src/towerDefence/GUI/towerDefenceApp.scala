@@ -68,10 +68,11 @@ object towerDefenceApp extends SimpleSwingApplication {
         game.towers.map(x => draw(g, x.pos, x.image))
         game.spawnedEnemies.map(x => draw(g, x.pos, x.image))
         game.spawnedEnemies.map(x => drawHP(g, x.pos, x.HP))
+        
       }
       
       border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
-       val upImage = ImageIO.read(new File("./Pics/basicTowerUp.png"))
+       val upImage = ImageIO.read(new File("./Pics/basicTower.png"))
       val eastPanel = new BoxPanel(Orientation.Vertical) {
         preferredSize = new Dimension(constants.guiWidth, constants.viewHeight)
         border = Swing.MatteBorder(0, 8, 0, 0, Color.darkGray)
@@ -104,7 +105,10 @@ object towerDefenceApp extends SimpleSwingApplication {
                 allButtons.map(_.visible = true)
                 clickedSquare = Some((x,y))
               }
-              case None =>  allButtons.map(_.visible = false)
+              case None =>  {
+                clickedSquare = None
+                allButtons.map(_.visible = false)
+              }
             }
           }
         }
@@ -179,10 +183,9 @@ object buttons {
     maximumSize = new Dimension(constants.guiWidth, 50)
     preferredSize = new Dimension(constants.guiWidth, 50)
   }
-  val image = ImageIO.read(new File("./Pics/basicTowerUp.png"))
+  
   val basicTowerButton = new Button("200") {
-    
-    val image = ImageIO.read(new File("./Pics/basicTowerUp.png"))
+    val image = ImageIO.read(new File("./Pics/basicTower.png"))
     override def paintComponent(g: Graphics2D) {
        g.drawImage(image, 30, 0, null)
     }
@@ -191,6 +194,7 @@ object buttons {
     preferredSize = new Dimension(constants.guiWidth, 60)
     visible = false
   }
+  
   val basicTowerCost = new Label("cost: " + constants.basicTowerCost.toString()) {
     this.font = new Font("Calibri", 0, 20)
     minimumSize = new Dimension(constants.guiWidth, 40)
