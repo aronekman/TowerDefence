@@ -21,7 +21,11 @@ s------------------gg.
 #1 
 BasicEnemy 20
 #2 
-BasicEnemy 30
+BasicEnemy 40
+#3
+BasicEnemy 60
+#4
+BasicEnemy 100
 
 #End
 

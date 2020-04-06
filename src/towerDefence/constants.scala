@@ -18,10 +18,15 @@ object constants {
   var enemyDelay = 50
   var ticksPerSecond = 200
   var startHP = 20
-  var startMoney = 150
+  var startMoney = 1000
   
   
-  var basicTowerCost = 50
+  var tower1Cost = 50
+  var tower1upg1Cost = 100
+  
+  var tower2Cost = 100
+  var tower2upg1Cost = 75
+  var tower2upg2Cost = 125
   
   
   def distanceBetweenPoints(a: (Int, Int), b: (Int, Int)) = {

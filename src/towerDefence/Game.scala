@@ -27,6 +27,7 @@ class Game {
   var waveEnemies: Seq[Enemy] = Seq()
   
   var running: Boolean = false
+  var waveOver: Boolean = false
   
   def isLost: Boolean = HP <= 0
   def isWon: Boolean = {
@@ -67,9 +68,13 @@ class Game {
   
   def addTower(tower: String, pos: (Int, Int)) = {
     tower match {
-      case "basicTower" => {
-        towers = towers :+ new basicTower(pos, this)
-        money -= towers.last.cost
+      case "tower1" => {
+        towers = towers :+ new tower1(pos, this)
+        money -= constants.tower1Cost
+      }
+      case"tower2" => {
+        towers = towers :+ new tower2(pos, this)
+        money -= constants.tower2Cost
       }
       case _ =>
     }
@@ -101,6 +106,7 @@ class Game {
   def waveChanger = {
     if ((spawnedEnemies.isEmpty && waveEnemies.isEmpty) && !this.isWon && !this.isLost) {
       running = false
+      waveOver = true
       wave += 1
       waveEnemies = allEnemies(wave)
     } else if (this.isWon) {

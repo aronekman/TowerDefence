@@ -9,7 +9,6 @@ import javax.imageio._
 import java.awt.event.{ActionListener, ActionEvent}
 import scala.swing.event._
 import java.awt.{Color, Rectangle}
-import javax.swing.ImageIcon
 
 object towerDefenceApp extends SimpleSwingApplication {
   
@@ -26,9 +25,9 @@ object towerDefenceApp extends SimpleSwingApplication {
     this.title = "Tower Defence"
     this.resizable = false
     this.preferredSize = new Dimension(constants.viewWidth + constants.guiWidth + 20,constants.viewHeight + constants.guiHeight + 55) 
-  //  this.minimumSize = new Dimension(constants.viewWidth + 89,constants.viewHeight + constants.squareHeight * 2)
-  //  this.maximumSize = new Dimension(constants.viewWidth + 89,constants.viewHeight + constants.squareHeight * 2)
+ 
     var clickedSquare: Option[(Int,Int)] = None
+    var clickedTower: Option[Tower] = None
     
     def draw(g: Graphics2D, pos: (Int, Int), pic: Image): Unit = {
       g.drawImage(pic, pos._1, pos._2, null)
@@ -48,18 +47,35 @@ object towerDefenceApp extends SimpleSwingApplication {
       this.foreground = Color.black
     }
     
-    val money = new Label("Money: " + game.money.toString()) {
+    val money = new Label("Money: " + game.money.toString() + "$") {
       this.font = new Font("Calibri", 0, 36)
       this.foreground = Color.black
     }
     
     
-    val startButton = buttons.startButton
-    val basicTowerButton = buttons.basicTowerButton
-    val basicTowerCost = buttons.basicTowerCost
+    val playButton = buyButtons.playButton
+    val buyLabel = buyButtons.buyLabel
+    val upgradeLabel = buyButtons.upgradeLabel
     
-    val allButtons = Seq(basicTowerButton, basicTowerCost)
-      
+    val tower1Button = buyButtons.tower1Button
+    val tower1Cost = buyButtons.tower1Cost
+    val tower2Button = buyButtons.tower2Button
+    val tower2Cost = buyButtons.tower2Cost
+    
+    val allTowerButtons = Seq(buyLabel, tower1Button, tower1Cost, tower2Button, tower2Cost)
+    
+    val tower1upgButton = buyButtons.tower1UpgButton
+    val tower1UpgCost = buyButtons.tower1UpgCost
+    val tower2upg1Button = buyButtons.tower2Upg1Button
+    val tower2Upg1Cost = buyButtons.tower2Upg1Cost    
+    val tower2upg2Button = buyButtons.tower2Upg2Button
+    val tower2Upg2Cost = buyButtons.tower2Upg2Cost
+    val fullyUpgraded = buyButtons.fullyUpgraded
+    
+    val allUpgButtons = Seq(tower1upgButton, tower2upg1Button, tower2upg2Button)
+    val allUpgLabels = Seq(upgradeLabel, tower1UpgCost, tower2Upg1Cost, tower2Upg2Cost, fullyUpgraded)
+    val allUpg = allUpgButtons.zip(allUpgLabels.tail.init)
+    
     val map = new BorderPanel {
       override def paintComponent(g: Graphics2D) {
         game.grass.map(x => draw(g, x._2, grassImage))
@@ -72,16 +88,26 @@ object towerDefenceApp extends SimpleSwingApplication {
       }
       
       border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
-       val upImage = ImageIO.read(new File("./Pics/basicTower.png"))
+      
       val eastPanel = new BoxPanel(Orientation.Vertical) {
         preferredSize = new Dimension(constants.guiWidth, constants.viewHeight)
         border = Swing.MatteBorder(0, 8, 0, 0, Color.darkGray)
-        contents += startButton
-        // contents += Swing.HGlue
-        //contents += Swing.HStrut(50)
-        contents += basicTowerButton
-        contents += basicTowerCost
-
+        contents += playButton
+        
+        contents += buyLabel
+        contents += tower1Button
+        contents += tower1Cost
+        contents += tower2Button
+        contents += tower2Cost
+        
+        contents += upgradeLabel
+        contents += tower1upgButton
+        contents += tower1UpgCost
+        contents += tower2upg1Button
+        contents += tower2Upg1Cost
+        contents += tower2upg2Button
+        contents += tower2Upg2Cost
+        contents += fullyUpgraded
       }
       
       val southPanel = new BoxPanel(Orientation.Horizontal) {
@@ -101,54 +127,111 @@ object towerDefenceApp extends SimpleSwingApplication {
         reactions += {
           case e: MouseClicked => {
             game.towerSquare.find(x => x._1.contains(e.point)).map(_._2) match {
-              case Some((x,y)) => {
-                allButtons.map(_.visible = true)
-                clickedSquare = Some((x,y))
+              case Some(position) => {
+                game.towers.find(x => x.pos == position) match {
+                  case Some(tower) => {
+                    upgButtons(tower)
+                    clickedTower = Some(tower)
+                    clickedSquare = None
+                  }
+                  case None => {
+                    allTowerButtons.map(_.visible = true)
+                    allUpgButtons.map(_.visible = false)
+                    allUpgLabels.map(_.visible = false)
+                    clickedSquare = Some(position)
+                    clickedTower = None
+                  }
+                }
               }
               case None =>  {
                 clickedSquare = None
-                allButtons.map(_.visible = false)
+                clickedTower = None
+                allTowerButtons.map(_.visible = false)
+                allUpgButtons.map(_.visible = false)
+                allUpgLabels.map(_.visible = false)
               }
             }
           }
         }
   
-      listenTo(startButton) 
-      listenTo(basicTowerButton)
+      listenTo(playButton) 
+      listenTo(tower1Button)
+      listenTo(tower2Button)
+      allUpgButtons.map(listenTo(_))
       reactions += {
         case ButtonClicked(b) => {
-          if (b == startButton) {
-            if (game.running) {
+          if (b == playButton) {
+            if (game.waveOver) {
+              b.text = "pause"
+              game.running = true
+              game.waveOver = false
+              wave.text = "Wave: %d".format(game.wave + 1)
+            } else if (game.running) {
               b.text = "start"
               game.running = false
             } else {
               b.text = "pause"
               game.running = true
-              wave.text = "Wave: %d".format(game.wave + 1)
             }
-            startButton.revalidate()
-            startButton.repaint()
-          } 
-          
-          if (b == basicTowerButton) {
-            if (constants.basicTowerCost <= game.money) {
-              game.addTower("basicTower", clickedSquare.get)
+            playButton.revalidate()
+            playButton.repaint()
+          } else if (b == tower1Button) {
+            if (constants.tower1Cost <= game.money) {
+              game.addTower("tower1", clickedSquare.get)
               clickedSquare = None
-              allButtons.map(_.visible = false)
+              allTowerButtons.map(_.visible = false)
               setMoney()
-              money.repaint()
+            }
+          } else if (b == tower2Button) {
+            if (constants.tower2Cost <= game.money) {
+              game.addTower("tower2", clickedSquare.get)
+              clickedSquare = None
+              allTowerButtons.map(_.visible = false)
+              setMoney()
+            }
+          } else {
+            clickedTower match {
+              case Some(tower) => {
+                if (game.money >= tower.nextUpgrade.get._2) {
+                  tower.upgrade
+                  setMoney()
+                  allUpgButtons.map(_.visible = false)
+                  allUpgLabels.map(_.visible = false)
+                }
+              }
+              case None =>
             }
           }
         }
       }
       
-    }    
+    } 
     
+    private def upgButtons(tower: Tower) {
+      allUpg.find(x => x._1.towerModel == tower.model && x._1.upg - 1 == tower.upgradeNr) match {
+        case Some((b,l)) => {
+          allUpgButtons.map(_.visible = false)
+          allUpgLabels.map(_.visible = false)
+          allTowerButtons.map(_.visible = false)
+          upgradeLabel.visible = true
+          b.visible = true
+          l.visible = true
+        }
+        case None => {
+          allUpgButtons.map(_.visible = false)
+          allUpgLabels.map(_.visible = false)
+          allTowerButtons.map(_.visible = false)
+          fullyUpgraded.visible = true
+        }
+      }
+    } 
+     
     private def setHP() = {
         hp.text = "HP: %d".format(game.HP)
       }
     private def setMoney() = {
-      money.text = "Money: %d".format(game.money)
+      money.text = "Money: %d$".format(game.money)
+      money.repaint()
     }
     private def setWave() = {
       wave.text = "Wave: %d".format(game.wave)
@@ -163,9 +246,12 @@ object towerDefenceApp extends SimpleSwingApplication {
           game.timePasses()
           setHP()
           setMoney()
+        } else if (game.waveOver){
+          map.repaint()
+          playButton.text = "next wave"
         } else {
           map.repaint()
-          startButton.text = "start"
+          playButton.text = "start"
         }
       }
     }
@@ -173,33 +259,5 @@ object towerDefenceApp extends SimpleSwingApplication {
     val timer = new Timer(1000/constants.ticksPerSecond, movement)
     timer.start()
   }
-  
 
-}
-
-object buttons {
-  val startButton = new Button("start") {
-    minimumSize = new Dimension(constants.guiWidth, 50)
-    maximumSize = new Dimension(constants.guiWidth, 50)
-    preferredSize = new Dimension(constants.guiWidth, 50)
-  }
-  
-  val basicTowerButton = new Button("200") {
-    val image = ImageIO.read(new File("./Pics/basicTower.png"))
-    override def paintComponent(g: Graphics2D) {
-       g.drawImage(image, 30, 0, null)
-    }
-    minimumSize = new Dimension(constants.guiWidth, 60)
-    maximumSize = new Dimension(constants.guiWidth, 60)
-    preferredSize = new Dimension(constants.guiWidth, 60)
-    visible = false
-  }
-  
-  val basicTowerCost = new Label("cost: " + constants.basicTowerCost.toString()) {
-    this.font = new Font("Calibri", 0, 20)
-    minimumSize = new Dimension(constants.guiWidth, 40)
-    maximumSize = new Dimension(constants.guiWidth, 40)
-    preferredSize = new Dimension(constants.guiWidth, 40)
-    visible = false
-    }
 }

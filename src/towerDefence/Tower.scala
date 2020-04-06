@@ -8,14 +8,18 @@ import scala.math._
 import java.awt.geom.AffineTransform
 
 abstract class Tower(val pos: (Int, Int), game: Game) {
-  val DMG: Int
+  var DMG: Int
   val cost: Int
   val range: Int
   var target: Option[Enemy] = None
-  val fireRate: Int
-  val towerImage: BufferedImage
+  var fireRate: Int
+  var towerImage: BufferedImage
   var image: BufferedImage
-
+  // (image, cost, DMG upgrade, firerate upgrade)
+  var upgrades: Seq[(BufferedImage, Int, Int, Int)]
+  var nextUpgrade: Option[(BufferedImage, Int, Int, Int)]
+  var upgradeNr: Int = 0
+  val model: Int
 
   
   var counter = fireRate
@@ -34,6 +38,26 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
     }
   }
   
+  def upgrade = {
+    nextUpgrade match {
+      case Some((nextImage, cost, dmgUpg, fireRateUpg)) => {
+        image = nextImage
+        towerImage = nextImage
+        upgradeNr += 1
+        DMG += dmgUpg
+        game.money -= cost
+        fireRate -= fireRateUpg
+        counter = fireRate
+        if (upgradeNr < upgrades.size) {
+          nextUpgrade = Option(upgrades(upgradeNr))
+        } else {
+          nextUpgrade = None
+        }
+      }
+      case None =>
+    }
+  }
+ 
   def findTarget = {
     var inRange = game.spawnedEnemies.filter(x => constants.distanceBetweenPoints(x.pos, pos) <= range)
     if (inRange.isEmpty) {
@@ -70,19 +94,29 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
   
 }
 
-class basicTower(pos: (Int, Int), game: Game) extends Tower(pos, game) {
-  val DMG = 20
-  val cost = constants.basicTowerCost
+class tower1(pos: (Int, Int), game: Game) extends Tower(pos, game) {
+  var DMG = 20
+  val cost = constants.tower1Cost
   val range = 200
-  val fireRate = 50
-  val towerImage = ImageIO.read(new File("./Pics/basicTower.png"))
+  var fireRate = 50
+  var towerImage = ImageIO.read(new File("./Pics/tower1.png"))
   var image = towerImage
-  
+  val upg1 = ImageIO.read(new File("./Pics/tower1upg1.png"))
+  var upgrades = Seq((upg1, 100, 20, 15))
+  var nextUpgrade = Option(upgrades(0))
+  val model: Int = 1
 }
 
-/*class archer(pos: (Int, Int)) extends Tower(pos) {
-  var DMG = 50
-  var cost = 50
-  var range = 100
-  var image = ???
-}  */
+class tower2(pos: (Int, Int), game: Game) extends Tower(pos, game) {
+  var DMG = 80
+  val cost = constants.tower2Cost
+  val range = 500
+  var fireRate = 400
+  var towerImage = ImageIO.read(new File("./Pics/tower2.png"))
+  var image = towerImage
+  val upg1 = ImageIO.read(new File("./Pics/tower2upg1.png"))
+  val upg2 = ImageIO.read(new File("./Pics/tower2upg2.png"))
+  var upgrades = Seq((upg1, 75, 25, 50),(upg2, 125, 35, 75))
+  var nextUpgrade = Option(upgrades(0))
+  val model: Int = 2
+}  
