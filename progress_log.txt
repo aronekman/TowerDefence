@@ -30,3 +30,24 @@ mitään hankalia virheitä ei ole esiintynyt
 
 Olen vähän, projektisuunnitelmassa arvioitua tilsannetta, edessä. 
 Jos jatkan tähän tahtiin uskon että minulle jää paljon aikaa pelin viimestelyyn
+
+Väliraportti 3:
+
+tornit kääntyy suoraan vihoolista päin eikä vain 90 astetta, kun he ampuvat.
+Gui nappuloita parannettu esim nyt voi upgradeta torneja, nappulat ovat myös 
+paljon siistimpiä.
+Pari vihollis sorttia lisätty sekä yksi torni
+
+Gui:n avulla olen pystynyt kokeilemaan kaikkia metodeja että he tomivat,
+aina kun uusi metodi on lisätty olen gui:n ja constanttien säädön avulla
+pystynyt kokeilemaan että bugeja ei löydy.
+
+Hankalaa oli saada tornit kääntymään niin kuin halusin, mutta ratkeshan se 
+ongelma lopulta.
+Muita ongelmia ei ole ollut.
+
+noin 30 tunti
+
+sanoisin että olen ihan hyvissä ajoissa mutta vielä jää nähtäväksi että jääkö
+loppuun aikaa toteuttaa pelin tallentamsen, voi olla että se jää väliin jos 
+en saa kaiken muun viimesteltyä tässä lähi aikoina.
