@@ -1,7 +1,7 @@
 package towerDefence
 
 import constants._
-import towerDefence._
+import towerDefence.constants._
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.File
@@ -10,11 +10,11 @@ abstract class Enemy(game: Game) {
   var HP: Int
   var reward: Int
   var startPos: (Int, Int) = (game.spawnPoint._1, game.spawnPoint._2)
-  var posX: Int = startPos._1
-  var posY: Int = startPos._2
-  def pos: (Int, Int) = (posX, posY)
-  var travelDistance: Int = 0
-  var speed = enemySpeed
+  var posX: Double = startPos._1.toDouble
+  var posY: Double = startPos._2.toDouble
+  def pos: (Int, Int) = (posX.toInt, posY.toInt)
+  var travelDistance: Double = 0
+  var speed: Double
   var wayPoint: Int = 0
   def nextWayPoint: (Int, Int) = game.path(wayPoint)
   var direction: String = {
@@ -50,16 +50,20 @@ abstract class Enemy(game: Game) {
   }
     
   def changeDirection = {
+    posX = nextWayPoint._1.toDouble
+    posY = nextWayPoint._2.toDouble
     wayPoint += 1
-    if (nextWayPoint._1 > posX) {
+    var x = nextWayPoint._1 - posX
+    var y = nextWayPoint._2 - posY
+    if (x > y && Distance(posY, nextWayPoint._2) < speed) {
       direction = "right"
       posX += speed
       image = rightImage
-    } else if (nextWayPoint._1 < posX && distanceBetweenPoints(game.path(wayPoint - 1), pos) < speed) {
+    } else if (x < y && Distance(posY, nextWayPoint._2) < speed) {
       direction = "left"
       posX -= speed
       image = leftImage
-    } else if (nextWayPoint._2 > posY && distanceBetweenPoints(game.path(wayPoint - 1), pos) < speed) {
+    } else if (y > x && Distance(posX, nextWayPoint._1) < speed) {
       direction = "down"
       posY += speed
       image = downImage
@@ -71,24 +75,71 @@ abstract class Enemy(game: Game) {
   }
   
   def move = {
-    if (distanceBetweenPoints(nextWayPoint, pos) < speed) {
-      this.changeDirection
-    } else {
-        direction match {
-          case "right" => posX += speed
-          case "down"  => posY += speed
-          case "left"  => posX -= speed
-          case "up"    => posY -= speed
+    travelDistance += speed
+    direction match {
+      case "right" => {
+        if (Distance(posX, nextWayPoint._1) < speed) {
+          this.changeDirection
+        } else {
+           posX += speed
+        }
+      }
+      case "down"  => {
+        if (Distance(posY, nextWayPoint._2) < speed) {
+          this.changeDirection
+        } else {
+           posY += speed
+        }
+      }
+      case "left"  => {
+        if (Distance(posX, nextWayPoint._1) < speed) {
+          this.changeDirection
+        } else {
+           posX -= speed
+        }
+      }
+      case "up" => {
+        if (Distance(posY, nextWayPoint._2) < speed) {
+          this.changeDirection
+        } else {
+           posY -= speed
+        }
       }
     }
   }
+  
+  private def Distance(from: Double, to: Int): Double = {
+    Math.abs(to - from)
+  }
+  
 }
 
-class BasicEnemy(game: Game) extends Enemy(game) {
-  var HP: Int = 100
-  var reward: Int = 3
-  val rightImage = ImageIO.read(new File("./Pics/basicEnemyRight.png"))
-  val leftImage  = ImageIO.read(new File("./Pics/basicEnemyLeft.png"))
-  val downImage  = ImageIO.read(new File("./Pics/basicEnemyDown.png"))
-  val upImage    = ImageIO.read(new File("./Pics/basicEnemyUp.png"))
+class Enemy1(game: Game) extends Enemy(game) {
+  var HP: Int = enemy1HP
+  var reward: Int = enemy1revard
+  var speed = (enemyBaseSpeed*enemy1SpeedMultiplier)
+  val rightImage = ImageIO.read(new File("./Pics/enemy1Right.png"))
+  val leftImage  = ImageIO.read(new File("./Pics/enemy1Left.png"))
+  val downImage  = ImageIO.read(new File("./Pics/enemy1Down.png"))
+  val upImage    = ImageIO.read(new File("./Pics/enemy1Down.png"))
+}
+
+class Enemy2(game: Game) extends Enemy(game) {
+  var HP: Int = enemy2HP
+  var reward: Int = enemy2revard
+  var speed = (enemyBaseSpeed*enemy2SpeedMultiplier)
+  val rightImage = ImageIO.read(new File("./Pics/enemy2Right.png"))
+  val leftImage  = ImageIO.read(new File("./Pics/enemy2Left.png"))
+  val downImage  = ImageIO.read(new File("./Pics/enemy2Down.png"))
+  val upImage    = ImageIO.read(new File("./Pics/enemy2Down.png"))
+}
+
+class Enemy3(game: Game) extends Enemy(game) {
+  var HP: Int = enemy3HP
+  var reward: Int = enemy3revard
+  var speed = (enemyBaseSpeed*enemy3SpeedMultiplier)
+  val rightImage = ImageIO.read(new File("./Pics/enemy3Right.png"))
+  val leftImage  = ImageIO.read(new File("./Pics/enemy3Left.png"))
+  val downImage  = ImageIO.read(new File("./Pics/enemy3Down.png"))
+  val upImage    = ImageIO.read(new File("./Pics/enemy3Down.png"))
 }

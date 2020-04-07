@@ -176,14 +176,14 @@ object towerDefenceApp extends SimpleSwingApplication {
             playButton.revalidate()
             playButton.repaint()
           } else if (b == tower1Button) {
-            if (constants.tower1Cost <= game.money) {
+            if (constants.t1Cost <= game.money) {
               game.addTower("tower1", clickedSquare.get)
               clickedSquare = None
               allTowerButtons.map(_.visible = false)
               setMoney()
             }
           } else if (b == tower2Button) {
-            if (constants.tower2Cost <= game.money) {
+            if (constants.t2Cost <= game.money) {
               game.addTower("tower2", clickedSquare.get)
               clickedSquare = None
               allTowerButtons.map(_.visible = false)

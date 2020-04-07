@@ -70,11 +70,11 @@ class Game {
     tower match {
       case "tower1" => {
         towers = towers :+ new tower1(pos, this)
-        money -= constants.tower1Cost
+        money -= constants.t1Cost
       }
       case"tower2" => {
         towers = towers :+ new tower2(pos, this)
-        money -= constants.tower2Cost
+        money -= constants.t2Cost
       }
       case _ =>
     }
@@ -97,7 +97,7 @@ class Game {
   }
   
   def loseHP = {
-    if (!spawnedEnemies.isEmpty && constants.distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= constants.enemySpeed) {
+    if (!spawnedEnemies.isEmpty && distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= spawnedEnemies.head.speed) {
       spawnedEnemies = spawnedEnemies.drop(1)
       HP -= 1
     }
@@ -118,8 +118,7 @@ class Game {
   
   def timePasses() = {
     spawnedEnemies.map(_.move)
-    spawnedEnemies.map(_.travelDistance += 1)
-    spawnedEnemies.sortBy(_.travelDistance)
+    spawnedEnemies = spawnedEnemies.sortBy(_.travelDistance)(Ordering[Double].reverse)
     towers.map(_.findTarget)
     towers.map(_.doDamage)
     spawnedEnemies.map(getMoney(_))
@@ -137,6 +136,10 @@ class Game {
       path = path :+ grid.minBy(distanceBetweenPoints(_, path.last))
       grid = grid.filter(_ != path.last)
       }
+  }
+  
+  private def distanceBetweenPoints(a: (Int, Int), b: (Int, Int)) = {
+    Math.sqrt((a._2 - b._2) * (a._2 - b._2) + (a._1 - b._1) * (a._1 - b._1))
   }
   
 }

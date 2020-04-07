@@ -50,10 +50,16 @@ object gameReader {
             wave = Seq()
           }
         } else if (currentLine != "") {
-          times = currentLine.filter(_.isDigit).toInt
-          currentLine.filter(_.isLetter).trim() match {
-            case "basicenemy" => {
-              wave = wave ++ Seq.fill(times)(new BasicEnemy(game))
+          times = currentLine.dropWhile(_ != ' ').tail.toInt
+          currentLine.takeWhile(_ != ' ').trim() match {
+            case "enemy1" => {
+              wave = wave ++ Seq.fill(times)(new Enemy1(game))
+            }
+            case "enemy2" => {
+              wave = wave ++ Seq.fill(times)(new Enemy2(game))
+            }
+            case "enemy3" => {
+              wave = wave ++ Seq.fill(times)(new Enemy3(game))
             }
             case _ =>
           }

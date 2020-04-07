@@ -34,7 +34,7 @@ object buyButtons {
     visible = false
   }
   
-  val tower1Cost = new Label("cost: " + constants.tower1Cost.toString() + "$") {
+  val tower1Cost = new Label("cost: " + constants.t1Cost.toString() + "$") {
     val towerModel = 1
     this.font = new Font("Calibri", 0, 20)
     setLabelSize(this)
@@ -50,12 +50,12 @@ object buyButtons {
     visible = false
   }
   
-  val tower2Cost = new Label("cost: " + constants.tower2Cost.toString() + "$") {
+  val tower2Cost = new Label("cost: " + constants.t2Cost.toString() + "$") {
     val towerModel = 2
     this.font = new Font("Calibri", 0, 20)
     setLabelSize(this)
     visible = false
-    }
+  }
   
   val tower1UpgButton = new Button() {
     val upg = 1
@@ -67,7 +67,7 @@ object buyButtons {
     setButtonSize(this)
     visible = false
   }
-  val tower1UpgCost = new Label("cost: " + constants.tower1upg1Cost.toString() + "$") {
+  val tower1UpgCost = new Label("cost: " + constants.t1u1Cost.toString() + "$") {
     val upg = 1
     val towerModel = 1
     this.font = new Font("Calibri", 0, 20)
@@ -85,7 +85,8 @@ object buyButtons {
     setButtonSize(this)
     visible = false
   }
-  val tower2Upg1Cost = new Label("cost: " + constants.tower2upg1Cost.toString() + "$") {
+   
+  val tower2Upg1Cost = new Label("cost: " + constants.t2u1Cost.toString() + "$") {
     val upg = 1
     val towerModel = 2
     this.font = new Font("Calibri", 0, 20)
@@ -103,7 +104,7 @@ object buyButtons {
     setButtonSize(this)
     visible = false
   }
-  val tower2Upg2Cost = new Label("cost: " + constants.tower2upg2Cost.toString() + "$") {
+  val tower2Upg2Cost = new Label("cost: " + constants.t2u2Cost.toString() + "$") {
     val upg = 2
     val towerModel = 2
     this.font = new Font("Calibri", 0, 20)

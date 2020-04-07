@@ -19,13 +19,25 @@ s------------------gg.
 
 #Waves
 #1 
-BasicEnemy 20
+Enemy2 5
+Enemy1 5
+Enemy3 5
 #2 
-BasicEnemy 40
+Enemy2 5
+Enemy1 5
+Enemy2 5
+Enemy3 5
+Enemy1 5
 #3
-BasicEnemy 60
+Enemy2 10
+Enemy1 10
+Enemy2 10
+Enemy1 10
 #4
-BasicEnemy 100
+Enemy2 20
+Enemy1 20
+Enemy2 20
+Enemy1 20
 
 #End
 
