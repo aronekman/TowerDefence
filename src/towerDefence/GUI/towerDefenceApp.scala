@@ -122,6 +122,10 @@ object towerDefenceApp extends SimpleSwingApplication {
         buyButtons.setOwnButtonSize(this, 150, 50)
       }
       
+      val guideButton = new Button("Guide") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
       override def paintComponent(g: Graphics2D) {
         for {
           x <- 0 until constants.totalWidth by constants.squareWidth
@@ -136,6 +140,7 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += Swing.VStrut(constants.totalHeight/2 - 80)
         contents += startGameButton
         contents += continueButton
+        contents += guideButton
         contents += exitGameButton
       }
       
@@ -150,6 +155,7 @@ object towerDefenceApp extends SimpleSwingApplication {
       listenTo(startGameButton)
       listenTo(exitGameButton)
       listenTo(continueButton)
+      listenTo(guideButton)
       reactions += {
         case ButtonClicked(b) => {
           if (b == startGameButton) {
@@ -157,7 +163,47 @@ object towerDefenceApp extends SimpleSwingApplication {
           } else if (b == exitGameButton) {
             System.exit(0)
           } else if (b == continueButton) {
-            continueGame
+            continueGame()
+          } else if (b == guideButton) {
+            guideMenu()
+          }
+        }
+      }
+    }
+    
+    private def guideMenu(): Unit = {
+      if (gui.contents.contains(menu)) {
+        gui.contents -= menu
+        gui.contents += guide
+      } else {
+        gui.contents -= guide
+        gui.contents += menu
+      }
+      gui.revalidate()
+      gui.repaint()
+    }
+    
+    val guide = new BorderPanel {
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
+      val backButton = new Button("Back") {
+        buyButtons.setOwnButtonSize(this, 100, 50)
+      }
+      val guideImage = ImageIO.read(new File("./Pics/guide.png"))
+      
+      override def paintComponent(g: Graphics2D) {
+        draw(g, (0,0), guideImage)
+      }
+      val buttonPanel = new BoxPanel(Orientation.Horizontal) {
+        this.opaque = false
+        contents += Swing.HStrut(constants.totalWidth/2 - 75)
+        contents += backButton
+      }
+      add(buttonPanel, BorderPanel.Position.South) 
+      listenTo(backButton) 
+      reactions += {
+        case ButtonClicked(b) => {
+          if (b == backButton) {
+            guideMenu()
           }
         }
       }
@@ -176,20 +222,39 @@ object towerDefenceApp extends SimpleSwingApplication {
         this.font = new Font("calibri", 0, 28)
       }
       
-      val loadMap1 = new Button("Map 1") {
+      val easyMap = new Button("Easy") {
         buyButtons.setOwnButtonSize(this, 150, 50)
-        val map = new File("./Maps/testMap.txt")
+        val map = new File("./Maps/easyMap.txt")
+      }
+      
+      val mediumMap = new Button("Medium") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+        val map = new File("./Maps/mediumMap.txt")
+      }
+      
+      val hardMap = new Button("Hard") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+        val map = new File("./Maps/hardMap.txt")
+      }
+      
+      val extremeMap = new Button("Extreme") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+        val map = new File("./Maps/extremeMap.txt")
       }
       
       val back = new Button("Back") {
         buyButtons.setOwnButtonSize(this, 150, 50)
       }
-      val allMapButtons = Seq(loadMap1)
+      val allMapButtons = Seq(easyMap, mediumMap, hardMap, extremeMap)
+      
       val panel = new BoxPanel(Orientation.Vertical) {
         this.opaque = false
         contents += Swing.VStrut(constants.totalHeight/2 - 100)
         contents += chooseMap
-        contents += loadMap1
+        contents += easyMap
+        contents += mediumMap
+        contents += hardMap
+        contents += extremeMap
         contents += back
       }
       

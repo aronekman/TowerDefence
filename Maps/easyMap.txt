@@ -1,0 +1,42 @@
+#Map
+......................
+.gggggggggggggggggggg.
+s------------------gg.
+.gg+ggggggggg+gggg-gg.
+.gg------ggg---ggg-gg.
+.gg-+ggg-+gg-+-ggg-gg.
+.gg-ggg+-----g-ggg-gg.
+.gg-gggggggggg-ggg-gg.
+.gg-+ggggggggg-ggg-gg.
+.gg--------ggg---g-gg.
+.gggggggg+-ggggg-+-gg.
+.gg--------ggggg---gg.
+.gg-+gggggggggggggggg.
+.gg---gg+gggggg+-----b
+.gggg------------+ggg.
+.gggggggggg+ggggggggg.
+......................
+
+#Waves
+#1 
+Enemy1 20
+#2 
+Enemy1 5
+Enemy2 10
+#3
+Enemy1 5
+Enemy3 3
+Enemy2 10
+#4
+enemy1 10
+enemy2 10
+enemy1 10 
+enemy3 10
+#5
+enemy3 5
+enemy2 10
+enemy4 5
+
+#End
+
+
