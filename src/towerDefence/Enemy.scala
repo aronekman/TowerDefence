@@ -16,7 +16,16 @@ abstract class Enemy(game: Game) {
   var travelDistance: Double = 0
   var speed: Double
   var wayPoint: Int = 0
-  def nextWayPoint: (Int, Int) = game.path(wayPoint)
+  var isInBase: Boolean = false
+  var nextWayPoint: (Int, Int) = _
+  def wayPointCalculator: Option[(Int, Int)] = {
+    if (wayPoint < game.path.size) {
+      Option(game.path(wayPoint))
+    } else {
+      None
+    }
+  } 
+  
   var direction: String = {
     if (startPos._1 < 50) {
       "right"
@@ -53,27 +62,35 @@ abstract class Enemy(game: Game) {
     posX = nextWayPoint._1.toDouble
     posY = nextWayPoint._2.toDouble
     wayPoint += 1
-    var x = nextWayPoint._1 - posX
-    var y = nextWayPoint._2 - posY
-    if (x > y && Distance(posY, nextWayPoint._2) < speed) {
-      direction = "right"
-      posX += speed
-      image = rightImage
-    } else if (x < y && Distance(posY, nextWayPoint._2) < speed) {
-      direction = "left"
-      posX -= speed
-      image = leftImage
-    } else if (y > x && Distance(posX, nextWayPoint._1) < speed) {
-      direction = "down"
-      posY += speed
-      image = downImage
-    } else {
-      direction = "up"
-      posY -= speed
-      image = upImage
-    }   
+    wayPointCalculator match {
+      case Some((x,y)) => {
+        nextWayPoint = (x,y)
+        var xDist = x - posX
+        var yDist = y - posY
+        if (xDist > yDist && Distance(posY, nextWayPoint._2) < speed) {
+          direction = "right"
+          posX += speed
+          image = rightImage
+        } else if (xDist < yDist && Distance(posY, nextWayPoint._2) < speed) {
+          direction = "left"
+          posX -= speed
+          image = leftImage
+        } else if (yDist > xDist && Distance(posX, nextWayPoint._1) < speed) {
+          direction = "down"
+          posY += speed
+          image = downImage
+        } else {
+          direction = "up"
+          posY -= speed
+          image = upImage
+        }   
+      }
+      case None => {
+        isInBase = true
+      }
+    }
   }
-  
+      
   def move = {
     travelDistance += speed
     direction match {
@@ -142,4 +159,14 @@ class Enemy3(game: Game) extends Enemy(game) {
   val leftImage  = ImageIO.read(new File("./Pics/enemy3Left.png"))
   val downImage  = ImageIO.read(new File("./Pics/enemy3Down.png"))
   val upImage    = ImageIO.read(new File("./Pics/enemy3Down.png"))
+}
+
+class Enemy4(game: Game) extends Enemy(game) {
+  var HP: Int = enemy4HP
+  var reward: Int = enemy4revard
+  var speed = (enemyBaseSpeed*enemy4SpeedMultiplier)
+  val rightImage = ImageIO.read(new File("./Pics/enemy4Right.png"))
+  val leftImage  = ImageIO.read(new File("./Pics/enemy4Left.png"))
+  val downImage  = ImageIO.read(new File("./Pics/enemy4Down.png"))
+  val upImage    = ImageIO.read(new File("./Pics/enemy4Up.png"))
 }

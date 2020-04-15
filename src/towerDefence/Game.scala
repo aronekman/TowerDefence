@@ -33,21 +33,25 @@ class Game {
   def isWon: Boolean = {
     (wave == allEnemies.length - 1) && waveEnemies.isEmpty && spawnedEnemies.isEmpty && !isLost
   }
+
+  
+  def loadGame(input: File) = {
+    gameReader.loadGame(new FileReader(input), this)
+    this.roadCalculator
+  }
   
   def spawnEnemies = {
     if (!waveEnemies.isEmpty && !isLost) {
       if (counter%enemyDelay == 0) {
-        spawnedEnemies = spawnedEnemies :+ waveEnemies(0)
+        var enemy = waveEnemies.head
+        enemy.nextWayPoint = path.head
+        spawnedEnemies = spawnedEnemies :+ enemy
         waveEnemies = waveEnemies.tail
         counter += 1
       } else {
         counter += 1
       }
     }
-  }
-  
-  def loader(input: File, game: Game) = {
-    gameReader.loadGame(new FileReader(input), game)
   }
   
    def addGrass(position: (Int, Int)) = {
@@ -72,8 +76,12 @@ class Game {
         towers = towers :+ new tower1(pos, this)
         money -= constants.t1Cost
       }
-      case"tower2" => {
+      case "tower2" => {
         towers = towers :+ new tower2(pos, this)
+        money -= constants.t2Cost
+      }
+      case "tower3" => {
+        towers = towers :+ new tower3(pos, this)
         money -= constants.t2Cost
       }
       case _ =>
@@ -97,10 +105,13 @@ class Game {
   }
   
   def loseHP = {
-    if (!spawnedEnemies.isEmpty && distanceBetweenPoints(spawnedEnemies.head.pos, path.last) <= spawnedEnemies.head.speed) {
-      spawnedEnemies = spawnedEnemies.drop(1)
-      HP -= 1
-    }
+   spawnedEnemies.find(_.isInBase) match {
+     case Some(enemy) => {
+       spawnedEnemies = spawnedEnemies.filter(_ != enemy)
+       HP -= 1
+     }
+     case None =>
+   }
   }
   
   def waveChanger = {
@@ -130,7 +141,7 @@ class Game {
   
   def roadCalculator = {
     var grid = road.map(_._2)
-    path = path :+ road.map(_._2).minBy(distanceBetweenPoints(_, spawnPoint))
+    path = path :+ grid.minBy(distanceBetweenPoints(_, spawnPoint))
     grid = grid.filterNot(_ == path.last)
     while (path.size < road.size) {
       path = path :+ grid.minBy(distanceBetweenPoints(_, path.last))

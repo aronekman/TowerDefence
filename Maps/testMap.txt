@@ -20,7 +20,9 @@ s------------------gg.
 #Waves
 #1 
 Enemy2 5
+enemy4 1
 Enemy1 5
+enemy4 1
 Enemy3 5
 #2 
 Enemy2 5
@@ -42,4 +44,3 @@ Enemy1 20
 #End
 
 
-// "g" = ground, "-" = enemyPath, "." = border, "b" = playerBase "+" = towerSquare

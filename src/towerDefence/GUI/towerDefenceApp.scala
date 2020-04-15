@@ -12,19 +12,18 @@ import java.awt.{Color, Rectangle}
 
 object towerDefenceApp extends SimpleSwingApplication {
   
-  val testMap = new File("./Maps/testMap.txt")
   val grassImage = ImageIO.read(new File("./Pics/Background.png"))
   val roadImage = ImageIO.read(new File("./Pics/Road.png"))
   val towerSquareImage = ImageIO.read(new File("./Pics/towerSquare.png"))
-  val game = new Game
-  game.loader(testMap, game)
-  game.roadCalculator
-
+  val spawnImage = ImageIO.read(new File("./Pics/enemySpawnPoint.png"))
+  val baseImage = ImageIO.read(new File("./Pics/base.png"))
+  var game = new Game
+  var chosenMap: Option[File] = None
 
   def top = new MainFrame {
     this.title = "Tower Defence"
     this.resizable = false
-    this.preferredSize = new Dimension(constants.viewWidth + constants.guiWidth + 20,constants.viewHeight + constants.guiHeight + 55) 
+    this.preferredSize = new Dimension(constants.totalWidth, constants.totalHeight) 
  
     var clickedSquare: Option[(Int,Int)] = None
     var clickedTower: Option[Tower] = None
@@ -51,9 +50,176 @@ object towerDefenceApp extends SimpleSwingApplication {
       this.font = new Font("Calibri", 0, 36)
       this.foreground = Color.black
     }
+    private def startGame(map: File): Unit = {
+      chosenMap = Some(map)
+      game = new Game
+      game.loadGame(map)
+      gui.contents -= mapChoiseMenu
+      gui.contents += gameScreen
+      continueButton.visible = true
+      setMoney()
+      setHP()
+      setWave()
+      allTowerButtons.map(_.visible = false)
+      allUpgButtons.map(_.visible = false)
+      allUpgLabels.map(_.visible = false)
+      gui.revalidate()
+      gui.repaint()
+      timer.start()
+    } 
     
+    private def menuToMapChooser(): Unit = {
+      gui.contents -= menu
+      gui.contents += mapChoiseMenu
+      gui.revalidate()
+      gui.repaint()
+    }
+    private def mapChooserToMenu(): Unit = {
+      gui.contents += menu
+      gui.contents -= mapChoiseMenu
+      gui.revalidate()
+      gui.repaint()
+    }
+    
+    private def continueGame(): Unit = {
+      gui.contents += gameScreen
+      gui.contents -= menu
+      gui.revalidate()
+      gui.repaint()
+      timer.start()
+      game.running = false
+    }
+    
+    private def exitToMenu(): Unit = {
+      gui.contents -= gameScreen
+      gui.contents += menu
+      gui.revalidate()
+      gui.repaint()
+      timer.stop()
+    }
+    
+    private def restartGame(): Unit = {
+      chosenMap match {
+        case Some(map) => {
+          gui.contents -= gameOverScreen
+          this.startGame(map)
+        }
+        case None => gui.contents -= gameOverScreen
+        gui.contents += menu
+      }
+    }
+    val continueButton = new Button("Continue") {
+      buyButtons.setOwnButtonSize(this, 150, 50)
+      this.visible = false
+    }
+    
+    val menu = new BorderPanel {
+      val startGameButton = new Button("Start new game") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
+      val exitGameButton = new Button("Exit game") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
+      override def paintComponent(g: Graphics2D) {
+        for {
+          x <- 0 until constants.totalWidth by constants.squareWidth
+          y <- 0 until constants.totalHeight by constants.squareHeight
+        }
+        draw(g, (x,y), grassImage)
+      }
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
+      
+      val startPanel = new BoxPanel(Orientation.Vertical) {
+        this.opaque = false
+        contents += Swing.VStrut(constants.totalHeight/2 - 80)
+        contents += startGameButton
+        contents += continueButton
+        contents += exitGameButton
+      }
+      
+      val emptyPanel = new BoxPanel(Orientation.Horizontal) {
+        this.preferredSize = new Dimension(constants.totalWidth/2 - 90, constants.totalHeight)
+        this.opaque = false
+      }
+      
+      add(emptyPanel, BorderPanel.Position.West)
+      add(startPanel, BorderPanel.Position.Center)
+      
+      listenTo(startGameButton)
+      listenTo(exitGameButton)
+      listenTo(continueButton)
+      reactions += {
+        case ButtonClicked(b) => {
+          if (b == startGameButton) {
+            menuToMapChooser()
+          } else if (b == exitGameButton) {
+            System.exit(0)
+          } else if (b == continueButton) {
+            continueGame
+          }
+        }
+      }
+    }
+    
+    val mapChoiseMenu = new BorderPanel {
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
+      override def paintComponent(g: Graphics2D) {
+        for {
+          x <- 0 until constants.totalWidth by constants.squareWidth
+          y <- 0 until constants.totalHeight by constants.squareHeight
+        }
+        draw(g, (x,y), grassImage)
+      }
+      val chooseMap = new Label("Choose map:") {
+        this.font = new Font("calibri", 0, 28)
+      }
+      
+      val loadMap1 = new Button("Map 1") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+        val map = new File("./Maps/testMap.txt")
+      }
+      
+      val back = new Button("Back") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      val allMapButtons = Seq(loadMap1)
+      val panel = new BoxPanel(Orientation.Vertical) {
+        this.opaque = false
+        contents += Swing.VStrut(constants.totalHeight/2 - 100)
+        contents += chooseMap
+        contents += loadMap1
+        contents += back
+      }
+      
+      val emptyPanel = new BoxPanel(Orientation.Horizontal) {
+        this.preferredSize = new Dimension(constants.totalWidth/2 - 90, constants.totalHeight)
+        this.opaque = false
+      }
+      
+      add(emptyPanel, BorderPanel.Position.West)
+      add(panel, BorderPanel.Position.Center)
+      allMapButtons.map(listenTo(_))
+      listenTo(back)
+      reactions += {
+        case ButtonClicked(b) => {
+          if (b == back) {
+            mapChooserToMenu
+          } else {
+            allMapButtons.find(_ == b) match {
+              case Some(button) => {
+                startGame(button.map)
+              }
+              case None =>
+            }
+          }
+        }
+      }
+    }
     
     val playButton = buyButtons.playButton
+    val exitButton = buyButtons.exitToMenu
     val buyLabel = buyButtons.buyLabel
     val upgradeLabel = buyButtons.upgradeLabel
     
@@ -61,8 +227,10 @@ object towerDefenceApp extends SimpleSwingApplication {
     val tower1Cost = buyButtons.tower1Cost
     val tower2Button = buyButtons.tower2Button
     val tower2Cost = buyButtons.tower2Cost
+    val tower3Button = buyButtons.tower3Button
+    val tower3Cost = buyButtons.tower3Cost
     
-    val allTowerButtons = Seq(buyLabel, tower1Button, tower1Cost, tower2Button, tower2Cost)
+    val allTowerButtons = Seq(buyLabel, tower1Button, tower1Cost, tower2Button, tower2Cost, tower3Button, tower3Cost)
     
     val tower1upgButton = buyButtons.tower1UpgButton
     val tower1UpgCost = buyButtons.tower1UpgCost
@@ -70,16 +238,22 @@ object towerDefenceApp extends SimpleSwingApplication {
     val tower2Upg1Cost = buyButtons.tower2Upg1Cost    
     val tower2upg2Button = buyButtons.tower2Upg2Button
     val tower2Upg2Cost = buyButtons.tower2Upg2Cost
+    val tower3upg1Button = buyButtons.tower3Upg1Button
+    val tower3Upg1Cost = buyButtons.tower3Upg1Cost    
+    val tower3upg2Button = buyButtons.tower3Upg2Button
+    val tower3Upg2Cost = buyButtons.tower3Upg2Cost
     val fullyUpgraded = buyButtons.fullyUpgraded
     
-    val allUpgButtons = Seq(tower1upgButton, tower2upg1Button, tower2upg2Button)
-    val allUpgLabels = Seq(upgradeLabel, tower1UpgCost, tower2Upg1Cost, tower2Upg2Cost, fullyUpgraded)
+    val allUpgButtons = Seq(tower1upgButton, tower2upg1Button, tower2upg2Button, tower3upg1Button, tower3upg2Button)
+    val allUpgLabels = Seq(upgradeLabel, tower1UpgCost, tower2Upg1Cost, tower2Upg2Cost, tower3Upg1Cost, tower3Upg2Cost, fullyUpgraded)
     val allUpg = allUpgButtons.zip(allUpgLabels.tail.init)
     
-    val map = new BorderPanel {
+    val gameScreen = new BorderPanel {
       override def paintComponent(g: Graphics2D) {
         game.grass.map(x => draw(g, x._2, grassImage))
-        game.road.map(x => draw(g, x._2, roadImage))
+        game.path.tail.init.map(x => draw(g, x, roadImage))
+        draw(g, game.path.head, spawnImage)
+        draw(g, game.path.last, baseImage)
         game.towerSquare.map(x => draw(g, x._2, towerSquareImage))
         game.towers.map(x => draw(g, x.pos, x.image))
         game.spawnedEnemies.map(x => draw(g, x.pos, x.image))
@@ -99,6 +273,8 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += tower1Cost
         contents += tower2Button
         contents += tower2Cost
+        contents += tower3Button
+        contents += tower3Cost
         
         contents += upgradeLabel
         contents += tower1upgButton
@@ -107,7 +283,14 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += tower2Upg1Cost
         contents += tower2upg2Button
         contents += tower2Upg2Cost
+        contents += tower3upg1Button
+        contents += tower3Upg1Cost
+        contents += tower3upg2Button
+        contents += tower3Upg2Cost
         contents += fullyUpgraded
+        
+        contents += Swing.VGlue
+        contents += exitButton
       }
       
       val southPanel = new BoxPanel(Orientation.Horizontal) {
@@ -119,7 +302,6 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += Swing.HGlue
         contents += money
       }
-      
       add(southPanel, BorderPanel.Position.South)
       add(eastPanel, BorderPanel.Position.East)
       
@@ -157,20 +339,22 @@ object towerDefenceApp extends SimpleSwingApplication {
       listenTo(playButton) 
       listenTo(tower1Button)
       listenTo(tower2Button)
+      listenTo(tower3Button)
+      listenTo(exitButton)
       allUpgButtons.map(listenTo(_))
       reactions += {
         case ButtonClicked(b) => {
           if (b == playButton) {
             if (game.waveOver) {
-              b.text = "pause"
+              b.text = "Pause"
               game.running = true
               game.waveOver = false
               wave.text = "Wave: %d".format(game.wave + 1)
             } else if (game.running) {
-              b.text = "start"
+              b.text = "Start"
               game.running = false
             } else {
-              b.text = "pause"
+              b.text = "Pause"
               game.running = true
             }
             playButton.revalidate()
@@ -189,6 +373,15 @@ object towerDefenceApp extends SimpleSwingApplication {
               allTowerButtons.map(_.visible = false)
               setMoney()
             }
+          } else if (b == tower3Button) {
+            if (constants.t3Cost <= game.money) {
+              game.addTower("tower3", clickedSquare.get)
+              clickedSquare = None
+              allTowerButtons.map(_.visible = false)
+              setMoney()
+            }
+          } else if (b == exitButton) {
+            exitToMenu()
           } else {
             clickedTower match {
               case Some(tower) => {
@@ -206,6 +399,90 @@ object towerDefenceApp extends SimpleSwingApplication {
       }
       
     } 
+    
+    private def showGameOverScreen(): Unit = {
+      gui.contents -= gameScreen
+      gui.contents += gameOverScreen
+      continueButton.visible = false
+      gui.revalidate()
+      gui.repaint()
+      timer.stop()
+      waveLabel.text = "you made it\n to  wave %d".format(game.wave + 1)
+    }
+    
+    private def exitFromGameOver(): Unit = {
+      gui.contents -= gameOverScreen
+      gui.contents += menu
+      gui.revalidate()
+      gui.repaint()
+    }
+          
+    val waveLabel = new TextArea {
+      this.font = new Font("calibri", 0, 30)
+      this.opaque = false
+      this.editable = false
+      this.preferredSize = new Dimension(200,80)
+      this.maximumSize = new Dimension(200,80)
+      this.minimumSize = new Dimension(200,80)
+      this.xLayoutAlignment = -50
+    }
+    
+    val gameOverScreen = new BorderPanel {
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
+      override def paintComponent(g: Graphics2D) {
+        for {
+          x <- 0 until constants.totalWidth by constants.squareWidth
+          y <- 0 until constants.totalHeight by constants.squareHeight
+        }
+        draw(g, (x,y), grassImage)
+      } 
+      
+      val gameOverLabel = new Label("Game Over") {
+        this.font = new Font("calibri", 0, 33)
+        this.foreground = Color.red
+      }
+      
+      val exitButton = new Button("Exit") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
+      val restartButton = new Button("Restart") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
+      val gameOverExitButton = new Button("Exit") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+      
+      val panel = new BoxPanel(Orientation.Vertical) {
+        this.opaque = false
+        contents += Swing.VStrut(constants.totalHeight/2 - 120)
+        contents += gameOverLabel
+        contents += waveLabel
+        contents += restartButton
+        contents += gameOverExitButton
+      }
+      
+      val emptyPanel = new BoxPanel(Orientation.Vertical) {
+        this.preferredSize = new Dimension(constants.totalWidth/2 - 90, constants.totalHeight)
+        this.opaque = false
+      }
+      
+      add(emptyPanel, BorderPanel.Position.West)
+      add(panel, BorderPanel.Position.Center)
+      
+      listenTo(restartButton)
+      listenTo(gameOverExitButton)
+      reactions += {
+        case ButtonClicked(b) => {
+          if (b == restartButton) {
+            restartGame()
+          } else if (b == gameOverExitButton) {
+            exitFromGameOver()
+          }
+        }
+      }
+    }
     
     private def upgButtons(tower: Tower) {
       allUpg.find(x => x._1.towerModel == tower.model && x._1.upg - 1 == tower.upgradeNr) match {
@@ -234,30 +511,39 @@ object towerDefenceApp extends SimpleSwingApplication {
       money.repaint()
     }
     private def setWave() = {
-      wave.text = "Wave: %d".format(game.wave)
+      if (game.wave > 0) {
+        wave.text = "Wave: %d".format(game.wave)
+      } else {
+        wave.text = "Wave: 1"
+      }
+    }
+    
+    val gui = new BoxPanel(Orientation.Vertical) {
+      contents += menu
     }
      
-    contents = map 
+    contents = gui 
     
     val movement = new ActionListener {
       def actionPerformed(e: ActionEvent) = {
         if (game.running) {
-          map.repaint()
+          gameScreen.repaint()
           game.timePasses()
           setHP()
           setMoney()
         } else if (game.waveOver){
-          map.repaint()
-          playButton.text = "next wave"
+          gameScreen.repaint()
+          playButton.text = "Next wave"
+        } else if (game.isLost) {
+          showGameOverScreen
         } else {
-          map.repaint()
-          playButton.text = "start"
+          gameScreen.repaint()
+          playButton.text = "Start"
         }
       }
     }
      
     val timer = new Timer(1000/constants.ticksPerSecond, movement)
-    timer.start()
   }
 
 }

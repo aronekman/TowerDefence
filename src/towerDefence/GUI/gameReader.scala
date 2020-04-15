@@ -61,6 +61,9 @@ object gameReader {
             case "enemy3" => {
               wave = wave ++ Seq.fill(times)(new Enemy3(game))
             }
+            case "enemy4" => {
+              wave = wave ++ Seq.fill(times)(new Enemy4(game))
+            }
             case _ =>
           }
         }

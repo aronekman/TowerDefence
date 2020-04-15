@@ -124,3 +124,17 @@ class tower2(pos: (Int, Int), game: Game) extends Tower(pos, game) {
   var nextUpgrade = Option(upgrades(0))
   val model: Int = 2
 }  
+
+class tower3(pos: (Int, Int), game: Game) extends Tower(pos, game) {
+  var DMG = t3DMG
+  val cost = t3Cost
+  val range = t3range
+  var fireRate = t3FR
+  var towerImage = ImageIO.read(new File("./Pics/tower3.png"))
+  var image = towerImage
+  val upg1 = ImageIO.read(new File("./Pics/tower3upg1.png"))
+  val upg2 = ImageIO.read(new File("./Pics/tower3upg2.png"))
+  var upgrades = Seq((upg1, t3u1Cost, t3u1DMG, t3u1FR),(upg2, t3u2Cost, t3u2DMG, t3u2FR))
+  var nextUpgrade = Option(upgrades(0))
+  val model: Int = 3
+}  
