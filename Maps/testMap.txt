@@ -1,0 +1,32 @@
+#Map
+......................
+.gggggggggggggggggggg.
+.gggggggggggggggggggg.
+s---------ggggggggggg.
+.gggggggg-ggggggggggg.
+.gggggggg-ggggggggggg.
+.gggggggg-ggggggggggg.
+.gggggggg-ggggggggggg.
+.gggggggg-ggggggggggg.
+.gggggggg-ggggggggggg.
+.ggg---gg-ggggggggggg.
+.ggg-g-gg-ggggggggggg.
+.ggg-g-gg-ggggggggggg.
+.ggg-g----ggggggggggg.
+.ggg-gggggggggggggggg.
+.ggg-gggggggggggggggg.
+....b.................
+
+#HP 20
+#Money 500
+
+#Waves
+
+#1 
+enemy1 2
+#2
+enemy1 1
+
+#End
+
+

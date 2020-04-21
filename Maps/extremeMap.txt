@@ -17,6 +17,9 @@ s---ggggggggggggggggg.
 .ggggggggggggggggg---b
 ......................
 
+#HP 5
+#Money 150
+
 
 #Waves
 #1 

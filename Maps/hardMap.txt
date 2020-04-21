@@ -17,32 +17,46 @@
 .ggggggg-gggg-ggggggg.
 ........s....b........
 
+#HP 10
+#Money 250
+
 #Waves
 #1 
-Enemy2 5
-enemy4 1
 Enemy1 5
-enemy4 1
-Enemy3 5
+Enemy2 3
 #2 
-Enemy2 5
-Enemy1 5
-Enemy2 5
-Enemy3 5
+Enemy1 3
+Enemy2 3
 Enemy1 5
 #3
-Enemy2 10
-Enemy1 10
-Enemy2 10
-Enemy1 10
+Enemy1 5
+Enemy3 3
+Enemy2 3
 #4
-Enemy2 20
-Enemy1 20
-Enemy2 20
-Enemy1 20
+enemy1 4
+enemy2 4
+enemy1 4 
+enemy3 4
 #5
-enemy3 50
+Enemy4 1
+Enemy1 10
+Enemy4 1
+#6
+Enemy3 8
+Enemy4 1
+Enemy2 10
+Enemy3 5
+Enemy4 1
+
+#7
+Enemy4 1
+Enemy3 10
+Enemy4 1
+Enemy3 5
+Enemy4 1
+Enemy1 5
+Enemy2 5
+Enemy3 5
+Enemy4 1
 
 #End
-
-

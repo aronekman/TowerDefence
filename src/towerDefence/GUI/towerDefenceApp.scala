@@ -193,12 +193,19 @@ object towerDefenceApp extends SimpleSwingApplication {
       override def paintComponent(g: Graphics2D) {
         draw(g, (0,0), guideImage)
       }
-      val buttonPanel = new BoxPanel(Orientation.Horizontal) {
+      val buttonPanel = new BoxPanel(Orientation.Vertical) {
         this.opaque = false
-        contents += Swing.HStrut(constants.totalWidth/2 - 75)
+        contents += Swing.VStrut(constants.totalHeight - 150)
         contents += backButton
       }
-      add(buttonPanel, BorderPanel.Position.South) 
+      
+      val emptyPanel = new BoxPanel(Orientation.Horizontal) {
+        this.preferredSize = new Dimension(constants.totalWidth/2 - 75, constants.totalHeight)
+        this.opaque = false
+      }
+      
+      add(emptyPanel, BorderPanel.Position.West)
+      add(buttonPanel, BorderPanel.Position.Center) 
       listenTo(backButton) 
       reactions += {
         case ButtonClicked(b) => {
@@ -461,9 +468,74 @@ object towerDefenceApp extends SimpleSwingApplication {
             }
           }
         }
+      } 
+    } 
+    
+    private def exitFromWinScreen(): Unit = {
+      gui.contents -= winScreen
+      gui.contents += menu
+      gui.revalidate()
+      gui.repaint()
+    }
+    
+        
+    private def showWinScreen(): Unit = {
+      gui.contents -= gameScreen
+      gui.contents += winScreen
+      continueButton.visible = false
+      gui.revalidate()
+      gui.repaint()
+      timer.stop()
+    }
+    
+    val winScreen = new BorderPanel {
+      border = Swing.MatteBorder(8, 8, 8, 8, Color.darkGray)
+      
+      val trophy = ImageIO.read(new File("./Pics/trophy.png"))
+      override def paintComponent(g: Graphics2D) {
+        for {
+          x <- 0 until constants.totalWidth by constants.squareWidth
+          y <- 0 until constants.totalHeight by constants.squareHeight
+        } {
+          draw(g, (x,y), grassImage)
+        }
+        draw(g, (constants.totalWidth/2 - 125, 100), trophy)
+      } 
+      
+      val victoryLabel = new Label("Victory!") {
+        this.font = new Font("calibri", 0, 46)
+        this.foreground = Color.red
       }
       
-    } 
+      val exitButton = new Button("Exit") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+      }
+
+      val panel = new BoxPanel(Orientation.Vertical) {
+        this.opaque = false
+        contents += Swing.VStrut(constants.totalHeight/2 - 80)
+        contents += victoryLabel
+        contents += exitButton
+      }
+      
+      val emptyPanel = new BoxPanel(Orientation.Vertical) {
+        this.preferredSize = new Dimension(constants.totalWidth/2 - 82, constants.totalHeight)
+        this.opaque = false
+      }
+      
+      add(emptyPanel, BorderPanel.Position.West)
+      add(panel, BorderPanel.Position.Center)
+      
+
+      listenTo(exitButton)
+      reactions += {
+        case ButtonClicked(b) => {
+          if (b == exitButton) {
+            exitFromWinScreen()
+          }
+        }
+      }
+    }
     
     private def showGameOverScreen(): Unit = {
       gui.contents -= gameScreen
@@ -481,7 +553,7 @@ object towerDefenceApp extends SimpleSwingApplication {
       gui.revalidate()
       gui.repaint()
     }
-          
+    
     val waveLabel = new TextArea {
       this.font = new Font("calibri", 0, 30)
       this.opaque = false
@@ -514,10 +586,7 @@ object towerDefenceApp extends SimpleSwingApplication {
       val restartButton = new Button("Restart") {
         buyButtons.setOwnButtonSize(this, 150, 50)
       }
-      
-      val gameOverExitButton = new Button("Exit") {
-        buyButtons.setOwnButtonSize(this, 150, 50)
-      }
+
       
       val panel = new BoxPanel(Orientation.Vertical) {
         this.opaque = false
@@ -525,7 +594,7 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += gameOverLabel
         contents += waveLabel
         contents += restartButton
-        contents += gameOverExitButton
+        contents += exitButton
       }
       
       val emptyPanel = new BoxPanel(Orientation.Vertical) {
@@ -537,12 +606,12 @@ object towerDefenceApp extends SimpleSwingApplication {
       add(panel, BorderPanel.Position.Center)
       
       listenTo(restartButton)
-      listenTo(gameOverExitButton)
+      listenTo(exitButton)
       reactions += {
         case ButtonClicked(b) => {
           if (b == restartButton) {
             restartGame()
-          } else if (b == gameOverExitButton) {
+          } else if (b == exitButton) {
             exitFromGameOver()
           }
         }
@@ -600,8 +669,10 @@ object towerDefenceApp extends SimpleSwingApplication {
           gameScreen.repaint()
           playButton.text = "Next wave"
         } else if (game.isLost) {
-          showGameOverScreen
-        } else {
+          showGameOverScreen()
+        } else if (game.isWon){
+          showWinScreen()
+        } else {  
           gameScreen.repaint()
           playButton.text = "Start"
         }

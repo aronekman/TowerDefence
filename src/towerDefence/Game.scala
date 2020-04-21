@@ -82,7 +82,7 @@ class Game {
       }
       case "tower3" => {
         towers = towers :+ new tower3(pos, this)
-        money -= constants.t2Cost
+        money -= constants.t3Cost
       }
       case _ =>
     }
@@ -120,6 +120,7 @@ class Game {
       waveOver = true
       wave += 1
       waveEnemies = allEnemies(wave)
+      allEnemies.map(_.map(enemy => enemy.HP += (enemy.HP*constants.enemyHpMultiplier).toInt))
     } else if (this.isWon) {
       running = false
     } else if (this.isLost) {

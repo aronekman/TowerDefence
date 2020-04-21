@@ -39,6 +39,13 @@ object gameReader {
       }
       
       while ({currentLine = lineReader.readLine().trim().toLowerCase(); !currentLine.startsWith("#waves")}) {
+        if (currentLine.contains("hp")) {
+          var hp = currentLine.filter(_.isDigit).toInt
+          game.HP = hp
+        } else if (currentLine.contains("money")) {
+          var money = currentLine.filter(_.isDigit).toInt
+          game.money = money
+        }
       }
       
       var wave: Seq[Enemy] = Seq()
