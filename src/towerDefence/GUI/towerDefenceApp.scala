@@ -249,10 +249,15 @@ object towerDefenceApp extends SimpleSwingApplication {
         val map = new File("./Maps/extremeMap.txt")
       }
       
+      val ownMap = new Button("player made map") {
+        buyButtons.setOwnButtonSize(this, 150, 50)
+        val map = new File("./Maps/ownMap.txt")
+      }
+      
       val back = new Button("Back") {
         buyButtons.setOwnButtonSize(this, 150, 50)
       }
-      val allMapButtons = Seq(easyMap, mediumMap, hardMap, extremeMap)
+      val allMapButtons = Seq(easyMap, mediumMap, hardMap, extremeMap, ownMap)
       
       val panel = new BoxPanel(Orientation.Vertical) {
         this.opaque = false
@@ -262,6 +267,7 @@ object towerDefenceApp extends SimpleSwingApplication {
         contents += mediumMap
         contents += hardMap
         contents += extremeMap
+        contents += ownMap
         contents += back
       }
       
@@ -653,7 +659,7 @@ object towerDefenceApp extends SimpleSwingApplication {
     }
     
     val gui = new BoxPanel(Orientation.Vertical) {
-      contents += menu
+      contents += winScreen
     }
      
     contents = gui 

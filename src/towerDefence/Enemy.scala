@@ -18,6 +18,8 @@ abstract class Enemy(game: Game) {
   var wayPoint: Int = 0
   var isInBase: Boolean = false
   var nextWayPoint: (Int, Int) = _
+  
+  //antaa seuraavan wayPointin, siis mihin suuntaan vihollinen pitäisi liikkua
   def wayPointCalculator: Option[(Int, Int)] = {
     if (wayPoint < game.path.size) {
       Option(game.path(wayPoint))
@@ -51,13 +53,15 @@ abstract class Enemy(game: Game) {
     }
   }
 
-  
+  //true jos tällä vihollisella vielä on HP:ta
   def isAlive: Boolean = HP > 0
   
+  //tältä vihollislta häviää DMG, verran HP:ta
   def takeDamage(DMG: Int) = {
     this.HP -= DMG
   }
-    
+  
+  //muuttaa suuntaa ja kuvaa
   def changeDirection = {
     posX = nextWayPoint._1.toDouble
     posY = nextWayPoint._2.toDouble
@@ -90,7 +94,8 @@ abstract class Enemy(game: Game) {
       }
     }
   }
-      
+  
+  //liikuttaa vihollista
   def move = {
     travelDistance += speed
     direction match {

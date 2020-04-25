@@ -23,11 +23,13 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
 
   
   var counter = fireRate
+  
+  //jos vihollinen on tornin säteen sisällä torni ampuu sitä
   def doDamage = {
     target match {
       case Some(enemy) =>  {
         if (counter == fireRate) {
-          changeImage(enemy.pos)
+          rotate(enemy.pos)
           enemy.takeDamage(DMG)
           counter = 0
         } else {
@@ -38,6 +40,7 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
     }
   }
   
+  //parantaa tornia
   def upgrade = {
     nextUpgrade match {
       case Some((nextImage, cost, dmgUpg, fireRateUpg)) => {
@@ -58,6 +61,7 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
     }
   }
  
+  //löytää vihollisen joka on tornin säteen sisällä sekä on edistynyt pisimmälle näistä vihollisista
   def findTarget = {
     var inRange = game.spawnedEnemies.filter(x => distanceBetweenPoints(x.pos, pos) <= range)
     if (inRange.isEmpty) {
@@ -67,7 +71,8 @@ abstract class Tower(val pos: (Int, Int), game: Game) {
     }
   }
   
-  def changeImage(enemyPos: (Int, Int)) = {
+  //kääntää tornia vihollista päin
+  def rotate(enemyPos: (Int, Int)) = {
      def angleCalcaluator: Double = {
        if (enemyPos._1 >= pos._1 && enemyPos._2 < pos._2) {
          Math.atan((enemyPos._1 - pos._1).toDouble/(pos._2 - enemyPos._2)).toDegrees

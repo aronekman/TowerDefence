@@ -19,7 +19,7 @@ object gameReader {
         throw new CorruptedTowerDefenceFileException("Unknown file type");
       }
       
-      
+      //lisää peliin tason kaikki komponentit
       var x = 0
       for (y <- 0 until 17) {
         currentLine = lineReader.readLine().trim()
@@ -38,6 +38,7 @@ object gameReader {
         x = 0
       }
       
+      // muuttaa pelaajan alku HP:ta ja rahaa
       while ({currentLine = lineReader.readLine().trim().toLowerCase(); !currentLine.startsWith("#waves")}) {
         if (currentLine.contains("hp")) {
           var hp = currentLine.filter(_.isDigit).toInt
@@ -48,6 +49,7 @@ object gameReader {
         }
       }
       
+      // lisää peliin viholliset aalloissa
       var wave: Seq[Enemy] = Seq()
       var times: Int = 0
       while ({currentLine = lineReader.readLine().trim().toLowerCase(); !currentLine.startsWith("#end")}) {
@@ -83,7 +85,6 @@ object gameReader {
       case e: IOException => throw new CorruptedTowerDefenceFileException("Corrupted TowerDefence File")
     }
   }
-  
   def positionCalculator(x: Int, y: Int): (Int, Int) = ((x*constants.squareWidth)-constants.squareWidth, (y*constants.squareHeight)-constants.squareHeight)
 }
 
